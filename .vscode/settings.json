@@ -1,0 +1,9 @@
+{
+    "cSpell.words": [
+        "openpyxl"
+    ],
+    "python.analysis.extraPaths": [
+        "updateContracts",
+        "C:/Users/LUGGGI/OneDrive - bwedu/projects/Locker"
+    ],
+}
