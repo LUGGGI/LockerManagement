@@ -25,30 +25,12 @@ class Contract:
             self.fields["since"] = datetime.strptime(fields["Datum"], "%d.%m.%Y")
             # self.fields["extended"] = NoneType
             self.fields["email"] = str(fields["MailAdresse"])
+
+            self.fields["collateral"] = int(50)
+            self.fields["rented"] = int(1)
         except Exception as e:
             print("  Error: " + str(e))
             self.fields["number"] = int(0)
             self.fields["name"] = str("Default")
             self.fields["since"] = datetime.strptime("01.01.2001", "%d.%m.%Y")
-            # self.fields["extended"] = NoneType
             self.fields["email"] = str("Default@default.de")
-    
-    def add_remaining_values(self):
-        self.fields["collateral"] = int(50)
-        # self.fields["comment"] = NoneType
-        # if old_number_of_keys < 1:
-        #     raise Exception("No keys left")
-        # self.fields["keys"] = old_number_of_keys - 1
-        self.fields["rented"] = int(1)
-
-        is_fs = input(self.fields["name"] + " is from fs (y/N): ")
-        if is_fs.lower() == "y":
-            self.fields["fs"] = 1
-            
-        # self.fields["problem"] = NoneType
-        # self.fields["revoked"] = NoneType
-        # self.fields["cleared"] = NoneType
-
-    def print(self):
-        print("  Number: %3s, Name: %20s, Email: %30s, Date: %10s" 
-            % (self.fields["number"], self.fields["name"], self.fields["email"], self.fields["since"].date()))

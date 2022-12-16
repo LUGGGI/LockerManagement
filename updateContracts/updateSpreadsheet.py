@@ -58,11 +58,20 @@ class UpdateSpreadsheet:
                 self.worksheet[self.COLUMNS[key][1]+row] = value
                 print("update: %10s: %30s, replacing: %s" %(key, value, current_values[key]))
                 updated = True
-        if updated: # entry["name"] != current_values["name"]:
+        
+        if updated:
+            # change number of keys in fs-office
             if current_values["keys"] < 1:
                 raise Exception("No keys left")
             self.worksheet[self.COLUMNS["keys"][1]+row] = current_values["keys"]-1
-            print("update: %10s: %30s, replacing: %s" %("keys", current_values["keys"]-1, current_values["keys"]))  
+            print("update: %10s: %30s, replacing: %s" %("keys", current_values["keys"]-1, current_values["keys"])) 
+
+            # check if someone is from fs
+            is_fs = input(entry["name"] + " is from fs (y/N): ")
+            if is_fs.lower() == "y":
+                entry["fs"] = 1
+                self.worksheet[self.COLUMNS["fs"][1]+row] = int(1)
+                print("update: %10s: %30s, replacing: %s" %("fs", 1, current_values["fs"]))  
         
         return updated
 
