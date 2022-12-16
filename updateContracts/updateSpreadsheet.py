@@ -1,31 +1,28 @@
 # Import the openpyxl library
 from datetime import datetime
-from types import NoneType
+from xmlrpc.client import Boolean
 import openpyxl
 
 
-columns = {
-    # key:          (type, column)
-    "number":       (int, 'A'),
-    "name":         (str, 'B'),
-    "since":        (datetime, 'C'),
-    "extended":     (datetime, 'D'),
-    "email":        (str, 'E'),
-    "collateral":   (int, 'F'),
-    "comment":      (str, 'G'),
-    "keys":         (int, 'H'),
-    "rented":       (int, 'I'),
-    "fs":           (int, 'J'),
-    "problem":      (int, 'K'),
-    "revoked":      (int, 'L'),
-    "cleared":      (int, 'M'),
-}
-
-# # Save the changes to the Excel file
-# workbook.save('my_excel_file.xlsx')
-
 class UpdateSpreadsheet:
     'handles interaction with excel file'
+    COLUMNS = {
+        # key:          (type, column)
+        "number":       (int, 'A'),
+        "name":         (str, 'B'),
+        "since":        (datetime, 'C'),
+        "extended":     (datetime, 'D'),
+        "email":        (str, 'E'),
+        "collateral":   (int, 'F'),
+        "comment":      (str, 'G'),
+        "keys":         (int, 'H'),
+        "rented":       (int, 'I'),
+        "fs":           (int, 'J'),
+        "problem":      (int, 'K'),
+        "revoked":      (int, 'L'),
+        "cleared":      (int, 'M'),
+    }
+
     number_of_rows = 409
     number_of_cols = 13
     def __init__(self, file: str) -> None:
@@ -49,29 +46,39 @@ class UpdateSpreadsheet:
             column  = chr(ord(column)+1) # get next letter in alphabet
         return entry
 
-    def update_entry(self, entry: dict):
+    def update_entry(self, entry: dict) -> bool:
         ''
         row =  str(entry["number"]+1)
         self.check_entry(entry)
 
         current_values = self.get_entry(entry["number"])
-
+        updated = False
         for key, value in entry.items():
             if value != current_values[key]: # only update value if different
-                self.worksheet[columns[key][1]+row] = value
-                print("update: " + str(value))
-        # self.workbook.save(self.file)
+                self.worksheet[self.COLUMNS[key][1]+row] = value
+                print("update: %10s: %30s, replacing: %s" %(key, value, current_values[key]))
+                updated = True
+        if updated: # entry["name"] != current_values["name"]:
+            if current_values["keys"] < 1:
+                raise Exception("No keys left")
+            self.worksheet[self.COLUMNS["keys"][1]+row] = current_values["keys"]-1
+            print("update: %10s: %30s, replacing: %s" %("keys", current_values["keys"]-1, current_values["keys"]))  
+        
+        return updated
+
+        
+
 
     def check_entry(self, entry: dict, check_order=False):
         'checks if the key and the associated type of the value are those specified in columns, can also check the order'
         if check_order:
-            for key_given, key_check in zip(entry, columns):
+            for key_given, key_check in zip(entry, self.COLUMNS):
                 if key_given != key_check:
                     raise Exception("key must be %s but is %s" %(key_check, key_given))
 
         for key, value in entry.items():
-            print(type(value), columns[key][0])
-            if not isinstance(value, columns[key][0]) and value != NoneType:
-                raise Exception("type must be %s but is %s: %s" %(columns[key][0], type(value), value))
+            # print(type(value), columns[key][0])
+            if not isinstance(value, self.COLUMNS[key][0]):
+                raise Exception("type must be %s but is %s; Value is %s" %(self.COLUMNS[key][0], type(value), value))
             
 

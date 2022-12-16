@@ -19,25 +19,26 @@ class Contract:
         try:
             reader = PdfReader(file)
             fields = reader.get_form_text_fields()
+
             self.fields["number"] = int(fields["Schließfachnummer"])
             self.fields["name"] = str(fields["Name"])
             self.fields["since"] = datetime.strptime(fields["Datum"], "%d.%m.%Y")
-            self.fields["extended"] = NoneType
+            # self.fields["extended"] = NoneType
             self.fields["email"] = str(fields["MailAdresse"])
         except Exception as e:
             print("  Error: " + str(e))
             self.fields["number"] = int(0)
             self.fields["name"] = str("Default")
             self.fields["since"] = datetime.strptime("01.01.2001", "%d.%m.%Y")
-            self.fields["extended"] = NoneType
+            # self.fields["extended"] = NoneType
             self.fields["email"] = str("Default@default.de")
     
-    def add_remaining_values(self, number_keys: int):
+    def add_remaining_values(self):
         self.fields["collateral"] = int(50)
         # self.fields["comment"] = NoneType
-        if number_keys < 1:
-            raise Exception("No keys left")
-        self.fields["keys"] = number_keys - 1
+        # if old_number_of_keys < 1:
+        #     raise Exception("No keys left")
+        # self.fields["keys"] = old_number_of_keys - 1
         self.fields["rented"] = int(1)
 
         is_fs = input(self.fields["name"] + " is from fs (y/N): ")
