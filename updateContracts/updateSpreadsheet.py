@@ -1,11 +1,19 @@
-# Import the openpyxl library
+'''
+updateSpreadsheet
+
+This Module handles the interaction with the spreadsheet.
+Allows for reading, updating and checking of entries
+
+Author: Lukas Beck
+Date: 17.12.2022
+'''
+
 from datetime import datetime
-from xmlrpc.client import Boolean
 import openpyxl
 
 
 class UpdateSpreadsheet:
-    'handles interaction with excel file'
+    'handles interaction with spreadsheets'
     COLUMNS = {
         # key:          (type, column)
         "number":       (int, 'A'),
@@ -47,7 +55,7 @@ class UpdateSpreadsheet:
         return entry
 
     def update_entry(self, entry: dict) -> bool:
-        ''
+        'gets an entry dictionary and updates the spreadsheet accordingly'
         row =  str(entry["number"]+1)
         self.check_entry(entry)
 

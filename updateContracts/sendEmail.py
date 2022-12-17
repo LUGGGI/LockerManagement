@@ -1,3 +1,11 @@
+'''
+sendEmail
+
+This Module sends a predefined email with an attached contract file
+
+Author: Lukas Beck
+Date: 17.12.2022
+'''
 import smtplib, ssl #importing the module
 
 from email import encoders
