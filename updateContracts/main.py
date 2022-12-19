@@ -16,42 +16,64 @@ from updateSpreadsheet import UpdateSpreadsheet
 from sendEmail import Email
 
 
-
 NEW_CONTRACT_DIR = "../ContractsNew"
 SAVED_CONTRACT_DIR = "../Contracts"
 SPREADSHEET = "../Locker.xlsx"
 
+class Main:
+    def __init__(self):
 
-spreadsheet = UpdateSpreadsheet(SPREADSHEET)
-email = Email()
+        try:
+            spreadsheet = UpdateSpreadsheet(SPREADSHEET)
+        except:
+            input("!!!  ERROR: Please close all programs that have the spreadsheet open and start program again, press Enter to exit: ")
+            quit()
 
-filenames = listdir(NEW_CONTRACT_DIR)
-for filename in filenames:
-    if not any(chr.isdigit() for chr in filename): # skip non contract files
-        continue
-    
-    # read contract
-    try:
-        contract = Contract(NEW_CONTRACT_DIR + "/" + filename)
-    except:
-        break
-    print(contract.fields)
+        email = Email()
 
-    updated = spreadsheet.update_entry(contract.fields)
+        filenames = listdir(NEW_CONTRACT_DIR)
+        for filename in filenames:
+            try:
+                if not any(chr.isdigit() for chr in filename): # skip non contract files
+                    continue
+                
+                # read contract
+                contract = Contract(NEW_CONTRACT_DIR + "/" + filename)
+                print(contract.fields)
 
-    if updated or True:
-        save = input("Save entry to file? (y/N): ")
-        if save.lower() == "y":       
-            spreadsheet.workbook.save(spreadsheet.file)        
+                # check entry and update the spreadsheet
+                updated = spreadsheet.update_entry(contract.fields)
 
-        send_email = input("Send Email? (y/N): ")
-        if send_email.lower() == "y": 
-            email.send_message("beck-lukas@gmx.net", NEW_CONTRACT_DIR, filename)
-            # email.send_message(contract.fields["email"], NEW_CONTRACT_DIR, filename)
+                if updated or True:
+                    save = input("Save entry to file? (y/N): ")
+                    if save.lower() == "y":       
+                        spreadsheet.workbook.save(spreadsheet.file)  
+                        print(" -> Saved")      
 
-    move_file = input("Move to Contracts folder? (Y/n): ") 
-    if move_file.lower() != "n":       
-        move(NEW_CONTRACT_DIR + "/" + filename, SAVED_CONTRACT_DIR + "/" + filename)
+                    send_email = input("Send Email? (y/N): ")
+                    if send_email.lower() == "y":
+                        email.send_message(contract.fields["email"], NEW_CONTRACT_DIR, filename)
+                        print(" -> Sent")
 
+                move_file = input("Move to Contracts folder? (Y/n): ") 
+                if move_file.lower() != "n":
+                    self.move_contract(filename)
+                            
+            except Exception as e:
+                print("!!!  ERROR: " + str(e))
+                continue
 
-input("Press enter to exit: ")        
+            
+    def move_contract(self, filename):
+        'move file to contracts folder'    
+        for _ in range(3):
+            try: 
+                move(NEW_CONTRACT_DIR + "/" + filename, SAVED_CONTRACT_DIR + "/" + filename)
+                print(" -> Moved")
+                return
+            except:
+                input("!!  ERROR: " + filename + " can't be moved, close all programs that have it open and press Enter: ")
+        raise Exception(filename + " can't be moved")
+
+main = Main()
+# input("Press enter to exit: ")  
