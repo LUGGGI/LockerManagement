@@ -76,4 +76,4 @@ class Main:
         raise Exception(filename + " can't be moved")
 
 main = Main()
-# input("Press enter to exit: ")  
+input("Press enter to exit: ")  
