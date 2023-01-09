@@ -8,7 +8,7 @@ Author: Lukas Beck
 Date: 17.12.2022
 '''
 
-from os import listdir
+from os import listdir, rename
 from shutil import move
 
 from readContract import Contract
@@ -36,22 +36,31 @@ class Main:
             try:
                 if not any(chr.isdigit() for chr in filename): # skip non contract files
                     continue
-                
+                print(filename)
                 # read contract
                 contract = Contract(NEW_CONTRACT_DIR + "/" + filename)
                 print(contract.fields)
 
+                # add contract name to filename 
+                if filename.split('.')[0].isdigit(): # check if filename is only digits
+                    name = contract.fields["name"].replace(' ', '_')
+                    new_filename = filename.split('.')[0] + '_' + name + ".pdf"
+                    
+                    rename(NEW_CONTRACT_DIR + '/' + filename, NEW_CONTRACT_DIR + '/' + new_filename)
+                    filename = new_filename
+
+
                 # check entry and update the spreadsheet
                 updated = spreadsheet.update_entry(contract.fields)
 
-                if updated or True:
-                    save = input("Save entry to file? (y/N): ")
-                    if save.lower() == "y":       
+                if updated:
+                    save = input("Save entry to file? (Y/n): ")
+                    if save.lower() != "n":       
                         spreadsheet.workbook.save(spreadsheet.file)  
                         print(" -> Saved")      
 
-                    send_email = input("Send Email? (y/N): ")
-                    if send_email.lower() == "y":
+                    send_email = input("Send Email? (Y/n): ")
+                    if send_email.lower() != "n":
                         email.send_message(contract.fields["email"], NEW_CONTRACT_DIR, filename)
                         print(" -> Sent")
 
