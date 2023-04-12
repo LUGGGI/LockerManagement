@@ -10,6 +10,7 @@ Date: 17.12.2022
 
 from os import listdir, rename
 from shutil import move
+from tabnanny import check
 
 from readContract import Contract
 from updateSpreadsheet import UpdateSpreadsheet
@@ -17,6 +18,7 @@ from sendEmail import Email
 
 
 NEW_CONTRACT_DIR = "../ContractsNew"
+OLD_CONTRACT_DIR = "../ContractsOld"
 SAVED_CONTRACT_DIR = "../Contracts"
 SPREADSHEET = "../Locker.xlsx"
 
@@ -31,42 +33,54 @@ class Main:
 
         email = Email()
 
-        filenames = listdir(NEW_CONTRACT_DIR)
+        self.work_folder = NEW_CONTRACT_DIR
+        self.save_folder = SAVED_CONTRACT_DIR
+        check_if_closed = False
+        filenames = listdir(self.work_folder)
+
+        # if there are no contracts in ContractsNew then the program will scan for contracts to remove
+
+        if filenames.__len__() <= 4:
+            self.work_folder = SAVED_CONTRACT_DIR
+            self.save_folder = OLD_CONTRACT_DIR
+            check_if_closed = True
+            filenames = listdir(self.work_folder)
+
+        
         for filename in filenames:
             try:
                 if not any(chr.isdigit() for chr in filename): # skip non contract files
                     continue
                 print(filename)
                 # read contract
-                contract = Contract(NEW_CONTRACT_DIR + "/" + filename)
-                print(contract.fields)
+                contract = Contract(self.work_folder + "/" + filename, check_if_closed)
 
                 # add contract name to filename 
                 if filename.split('.')[0].isdigit(): # check if filename is only digits
-                    name = contract.fields["name"].replace(' ', '_')
+                    name = contract.entries["name"].replace(' ', '_')
                     new_filename = filename.split('.')[0] + '_' + name + ".pdf"
                     
-                    rename(NEW_CONTRACT_DIR + '/' + filename, NEW_CONTRACT_DIR + '/' + new_filename)
+                    rename(self.work_folder + '/' + filename, self.work_folder + '/' + new_filename)
                     filename = new_filename
 
 
                 # check entry and update the spreadsheet
-                updated = spreadsheet.update_entry(contract.fields)
+                updated = spreadsheet.update_entry(contract.entries)
 
                 if updated:
                     save = input("Save entry to file? (Y/n): ")
                     if save.lower() != "n":       
                         spreadsheet.workbook.save(spreadsheet.file)  
                         print(" -> Saved")      
+                    if contract.entries["rented"] == 1:
+                        send_email = input("Send Email? (Y/n): ")
+                        if send_email.lower() != "n":
+                            email.send_message(contract.entries["email"], self.work_folder, filename)
+                            print(" -> Sent")
 
-                    send_email = input("Send Email? (Y/n): ")
-                    if send_email.lower() != "n":
-                        email.send_message(contract.fields["email"], NEW_CONTRACT_DIR, filename)
-                        print(" -> Sent")
-
-                move_file = input("Move to Contracts folder? (Y/n): ") 
-                if move_file.lower() != "n":
-                    self.move_contract(filename)
+                    move_file = input("Move to " + self.save_folder + " folder? (Y/n): ") 
+                    if move_file.lower() != "n":
+                        self.move_contract(filename)
                             
             except Exception as e:
                 print("!!!  ERROR: " + str(e))
@@ -74,15 +88,18 @@ class Main:
 
             
     def move_contract(self, filename):
-        'move file to contracts folder'    
+        'move file to save folder'    
         for _ in range(3):
             try: 
-                move(NEW_CONTRACT_DIR + "/" + filename, SAVED_CONTRACT_DIR + "/" + filename)
+                move(self.work_folder + "/" + filename, self.save_folder + "/" + filename)
                 print(" -> Moved")
                 return
             except:
                 input("!!  ERROR: " + filename + " can't be moved, close all programs that have it open and press Enter: ")
         raise Exception(filename + " can't be moved")
+    
+    def close_contract(self):
+        pass
 
 main = Main()
 input("Press enter to exit: ")  

@@ -57,7 +57,7 @@ class UpdateSpreadsheet:
     def update_entry(self, entry: dict) -> bool:
         'gets an entry dictionary and updates the spreadsheet accordingly'
         row =  str(entry["number"]+1)
-        self.check_entry(entry)
+        # self.check_entry(entry)
 
         current_values = self.get_entry(entry["number"])
         updated = False
@@ -68,6 +68,14 @@ class UpdateSpreadsheet:
                 updated = True
         
         if updated:
+            # code for closing contract
+            if entry["rented"] == None:
+                self.worksheet[self.COLUMNS["keys"][1]+row] = current_values["keys"]+1
+                self.worksheet[self.COLUMNS["fs"][1]+row] = None
+                print("update: %10s: %30s, replacing: %s" %("keys", current_values["keys"]+1, current_values["keys"])) 
+                print("update: %10s: %30s, replacing: %s" %("fs", None, current_values["fs"]))  
+                return updated
+            
             # change number of keys in fs-office
             if current_values["keys"] < 1:
                 raise Exception("No keys left")
