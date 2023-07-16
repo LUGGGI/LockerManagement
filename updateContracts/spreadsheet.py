@@ -1,18 +1,16 @@
 '''
-updateSpreadsheet
-
 This Module handles the interaction with the spreadsheet.
 Allows for reading, updating and checking of entries
 
 Author: Lukas Beck
-Date: 17.12.2022
+Date: 16.07.2023
 '''
 
 from datetime import datetime
 import openpyxl
 
 
-class UpdateSpreadsheet:
+class Spreadsheet:
     'handles interaction with spreadsheets'
     COLUMNS = {
         # key:          (type, column)
@@ -54,44 +52,50 @@ class UpdateSpreadsheet:
             column  = chr(ord(column)+1) # get next letter in alphabet
         return entry
 
-    def update_entry(self, entry: dict) -> bool:
+    def update_entry(self, new_entry: dict) -> bool:
         'gets an entry dictionary and updates the spreadsheet accordingly'
-        row =  str(entry["number"]+1)
+        row =  str(new_entry["number"]+1)
         # self.check_entry(entry)
 
-        current_values = self.get_entry(entry["number"])
+        spreadsheet_entry = self.get_entry(new_entry["number"])
         updated = False
-        for key, value in entry.items():
-            if value != current_values[key]: # only update value if different
+
+        if new_entry["name"] == spreadsheet_entry["name"]:
+            if new_entry["since"] != spreadsheet_entry["since"]:
+                new_entry["extended"] = new_entry["since"]
+                new_entry["since"] = spreadsheet_entry["since"]
+                print(f"Contract extended with date: {new_entry['extended']}")
+                return True
+
+        for key, value in new_entry.items():
+            if value != spreadsheet_entry[key]: # only update value if different
                 self.worksheet[self.COLUMNS[key][1]+row] = value
-                print("update: %10s: %30s, replacing: %s" %(key, value, current_values[key]))
+                print("update: %10s: %30s, replacing: %s" %(key, value, spreadsheet_entry[key]))
                 updated = True
         
         if updated:
             # code for closing contract
-            if entry["rented"] == None:
-                self.worksheet[self.COLUMNS["keys"][1]+row] = current_values["keys"]+1
+            if new_entry["rented"] == None:
+                self.worksheet[self.COLUMNS["keys"][1]+row] = spreadsheet_entry["keys"]+1
                 self.worksheet[self.COLUMNS["fs"][1]+row] = None
-                print("update: %10s: %30s, replacing: %s" %("keys", current_values["keys"]+1, current_values["keys"])) 
-                print("update: %10s: %30s, replacing: %s" %("fs", None, current_values["fs"]))  
-                return updated
+                print("update: %10s: %30s, replacing: %s" %("keys", spreadsheet_entry["keys"]+1, spreadsheet_entry["keys"])) 
+                print("update: %10s: %30s, replacing: %s" %("fs", None, spreadsheet_entry["fs"]))  
+                return True
             
             # change number of keys in fs-office
-            if current_values["keys"] < 1:
+            if spreadsheet_entry["keys"] < 1:
                 raise Exception("No keys left")
-            self.worksheet[self.COLUMNS["keys"][1]+row] = current_values["keys"]-1
-            print("update: %10s: %30s, replacing: %s" %("keys", current_values["keys"]-1, current_values["keys"])) 
+            self.worksheet[self.COLUMNS["keys"][1]+row] = spreadsheet_entry["keys"]-1
+            print("update: %10s: %30s, replacing: %s" %("keys", spreadsheet_entry["keys"]-1, spreadsheet_entry["keys"])) 
 
             # check if someone is from fs
-            is_fs = input(entry["name"] + " is from fs (y/N): ")
+            is_fs = input(new_entry["name"] + " is from fs (y/N): ")
             if is_fs.lower() == "y":
-                entry["fs"] = 1
+                new_entry["fs"] = 1
                 self.worksheet[self.COLUMNS["fs"][1]+row] = int(1)
-                print("update: %10s: %30s, replacing: %s" %("fs", 1, current_values["fs"]))  
+                print("update: %10s: %30s, replacing: %s" %("fs", 1, spreadsheet_entry["fs"]))  
         
         return updated
-
-        
 
 
     def check_entry(self, entry: dict, check_order=False):
@@ -106,4 +110,3 @@ class UpdateSpreadsheet:
             if not isinstance(value, self.COLUMNS[key][0]):
                 raise Exception("type must be %s but is %s; Value is %s" %(self.COLUMNS[key][0], type(value), value))
             
-

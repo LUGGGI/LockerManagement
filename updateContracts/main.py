@@ -1,20 +1,17 @@
 '''
-UpdateContracts
-
 This Program reads all the contracts in the "ContractsNew" folder.
 It can add the values to the Locker.xlsx and send an email to the contract holder with the contract attached
 
 Author: Lukas Beck
-Date: 17.12.2022
+Date: 16.07.2023
 '''
-
+import logging
 from os import listdir, rename
 from shutil import move
-from tabnanny import check
 
 from readContract import Contract
-from updateSpreadsheet import UpdateSpreadsheet
-from sendEmail import Email
+from spreadsheet import Spreadsheet
+from email_handler import Email
 
 
 NEW_CONTRACT_DIR = "../ContractsNew"
@@ -24,12 +21,19 @@ SPREADSHEET = "../Locker.xlsx"
 
 class Main:
     def __init__(self):
-
-        try:
-            spreadsheet = UpdateSpreadsheet(SPREADSHEET)
-        except:
-            input("!!!  ERROR: Please close all programs that have the spreadsheet open and start program again, press Enter to exit: ")
-            quit()
+        
+        for _ in range (5):
+            try:
+                spreadsheet = Spreadsheet(SPREADSHEET)
+            except PermissionError:
+                input("Please close all programs that have the spreadsheet open and start program again, press Enter to exit: ")
+                continue
+            except Exception as error:
+                logging.exception(error)
+                quit()
+            else:
+                break
+            
 
         email = Email()
 
@@ -68,14 +72,14 @@ class Main:
                 updated = spreadsheet.update_entry(contract.entries)
 
                 if updated:
-                    save = input("Save entry to file? (Y/n): ")
-                    if save.lower() != "n":       
-                        spreadsheet.workbook.save(spreadsheet.file)  
-                        print(" -> Saved")      
+                    # save = input("Save entry to file? (Y/n): ")
+                    # if save.lower() != "n":       
+                    #     spreadsheet.workbook.save(spreadsheet.file)  
+                    #     print(" -> Saved")      
                     if contract.entries["rented"] == 1:
                         send_email = input("Send Email? (Y/n): ")
                         if send_email.lower() != "n":
-                            email.send_message(contract.entries["email"], self.work_folder, filename)
+                            email.send_finished_contract(contract.entries["email"], f"{self.work_folder}/{filename}")
                             print(" -> Sent")
 
                     move_file = input("Move to " + self.save_folder + " folder? (Y/n): ") 
@@ -83,7 +87,7 @@ class Main:
                         self.move_contract(filename)
                             
             except Exception as e:
-                print("!!!  ERROR: " + str(e))
+                logging.exception(e)
                 continue
 
             
@@ -95,7 +99,8 @@ class Main:
                 print(" -> Moved")
                 return
             except:
-                input("!!  ERROR: " + filename + " can't be moved, close all programs that have it open and press Enter: ")
+                logging.error("!!  ERROR: " + filename + " can't be moved, close all programs that have it open")
+                input("press Enter to continue: ")
         raise Exception(filename + " can't be moved")
     
     def close_contract(self):
