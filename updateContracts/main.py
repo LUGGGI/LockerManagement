@@ -9,7 +9,7 @@ import logging
 from os import listdir, rename
 from shutil import move
 
-from readContract import Contract
+from contract_handler import Contract
 from spreadsheet import Spreadsheet
 from email_handler import Email
 
@@ -26,7 +26,7 @@ class Main:
             try:
                 spreadsheet = Spreadsheet(SPREADSHEET)
             except PermissionError:
-                input("Please close all programs that have the spreadsheet open and start program again, press Enter to exit: ")
+                input("Please close all programs that have the spreadsheet open and start program again, press Enter to continue: ")
                 continue
             except Exception as error:
                 logging.exception(error)
@@ -57,7 +57,8 @@ class Main:
                     continue
                 print(filename)
                 # read contract
-                contract = Contract(self.work_folder + "/" + filename, check_if_closed)
+                contract = Contract(self.work_folder + "/" + filename)
+                contract.read(check_if_closed)
 
                 # add contract name to filename 
                 if filename.split('.')[0].isdigit(): # check if filename is only digits
@@ -72,10 +73,10 @@ class Main:
                 updated = spreadsheet.update_entry(contract.entries)
 
                 if updated:
-                    # save = input("Save entry to file? (Y/n): ")
-                    # if save.lower() != "n":       
-                    #     spreadsheet.workbook.save(spreadsheet.file)  
-                    #     print(" -> Saved")      
+                    save = input("Save entry to file? (Y/n): ")
+                    if save.lower() != "n":       
+                        spreadsheet.workbook.save(spreadsheet.file)  
+                        print(" -> Saved")      
                     if contract.entries["rented"] == 1:
                         send_email = input("Send Email? (Y/n): ")
                         if send_email.lower() != "n":

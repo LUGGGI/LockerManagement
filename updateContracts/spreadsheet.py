@@ -59,13 +59,14 @@ class Spreadsheet:
 
         spreadsheet_entry = self.get_entry(new_entry["number"])
         updated = False
+        extended = False
 
         if new_entry["name"] == spreadsheet_entry["name"]:
             if new_entry["since"] != spreadsheet_entry["since"]:
                 new_entry["extended"] = new_entry["since"]
                 new_entry["since"] = spreadsheet_entry["since"]
                 print(f"Contract extended with date: {new_entry['extended']}")
-                return True
+                extended = True
 
         for key, value in new_entry.items():
             if value != spreadsheet_entry[key]: # only update value if different
@@ -73,7 +74,7 @@ class Spreadsheet:
                 print("update: %10s: %30s, replacing: %s" %(key, value, spreadsheet_entry[key]))
                 updated = True
         
-        if updated:
+        if updated and not extended:
             # code for closing contract
             if new_entry["rented"] == None:
                 self.worksheet[self.COLUMNS["keys"][1]+row] = spreadsheet_entry["keys"]+1
@@ -110,3 +111,9 @@ class Spreadsheet:
             if not isinstance(value, self.COLUMNS[key][0]):
                 raise Exception("type must be %s but is %s; Value is %s" %(self.COLUMNS[key][0], type(value), value))
             
+    def get_table(self):
+        '''Returns the whole locker table'''
+        table = []
+        for row in self.worksheet.iter_rows(max_row=self.number_of_rows, max_col=self.number_of_cols, values_only=True):
+            table.append(row)
+        return table
