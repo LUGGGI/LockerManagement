@@ -22,7 +22,7 @@ SENDER = "schliessfach@fs-ei.de"
 HOST = "mail.fs-ei.de"
 PORT = 465
 
-DEBUG = True # debug with MailTrap
+DEBUG = False # debug with MailTrap
 
 
 class Email:
@@ -46,7 +46,7 @@ class Email:
         :attachment: attachment to add to email
         '''
 
-        email = MIMEMultipart("alternative")
+        email = MIMEMultipart()
         email["Subject"] = subject
         email["From"] = SENDER
         email["To"] = receiver
@@ -96,3 +96,7 @@ class Email:
             with smtplib.SMTP("sandbox.smtp.mailtrap.io", PORT) as server:
                 server.login("704ed9de148a06", "963b4f6dc7f4e8")
                 server.sendmail(SENDER, receiver, email.as_string())
+
+if __name__ == "__main__":
+    email = Email()
+    email.send_finished_contract("lbeck@fs-ei.de", "ContractsNew/Formular_normal_sign.pdf")
