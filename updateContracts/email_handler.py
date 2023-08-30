@@ -57,7 +57,7 @@ class Email:
         # Add HTML/plain-text parts to MIMEMultipart message
         # The email client will try to render the last part first
         email.attach(MIMEText(message.plain_text, "plain"))
-        email.attach(MIMEText(message.html, "html"))
+        # email.attach(MIMEText(message.html, "html"))
 
         if attachment:
             # Open PDF file in binary mode
@@ -99,4 +99,4 @@ class Email:
 
 if __name__ == "__main__":
     email = Email()
-    email.send_finished_contract("lbeck@fs-ei.de", "ContractsNew/Formular_normal_sign.pdf")
+    email.send_finished_contract("beck-lukas@gmx.net", "ContractsNew/Formular_normal_sign.pdf")

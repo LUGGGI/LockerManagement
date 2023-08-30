@@ -12,6 +12,7 @@ from shutil import move
 from contract_handler import Contract
 from spreadsheet import Spreadsheet
 from email_handler import Email
+from fs_server_handler import upload_file
 
 
 NEW_CONTRACT_DIR = "../ContractsNew"
@@ -83,8 +84,9 @@ class Main:
                             email.send_finished_contract(contract.entries["email"], f"{self.work_folder}/{filename}")
                             print(" -> Sent")
 
-                    move_file = input("Move to " + self.save_folder + " folder? (Y/n): ") 
+                    move_file = input("Move to " + self.save_folder + " folder and to fs-Server? (Y/n): ") 
                     if move_file.lower() != "n":
+                        upload_file(f"{self.work_folder}/{filename}")
                         self.move_contract(filename)
                             
             except Exception as e:

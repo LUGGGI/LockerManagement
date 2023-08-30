@@ -12,55 +12,35 @@ class Message:
 
 new_contract = Message(
     """\
-    For English see below!
-    _______________________________________________________________________________
-
     Hallo,
     hier ist dein Vertrag für das Schließfach.
     Die Nutzungsbedingungen findest du unter https://fs-ei.de/de/services/lockers_guidelines/ .
-    Wenn du Fragen hast oder etwas kaputt ist, melde dich gerne (schliessfach@fs-ei.de).
+    Wenn du Fragen hast oder etwas kaputt ist, melde dich gerne.
 
     Gruß
 
-    LUGGGI (Lukas Beck)
+    Lugggi
+
+    Email: schliessfach@fs-ei.de
+    Telegram/WhatsApp: +49 1516 4671308
 
     _______________________________________________________________________________
 
     Hello,
     Here is your contract for the locker.
     You can find the terms of use at https://fs-ei.de/de/services/lockers_guidelines/ .
-    If you have any questions or if something is broken, please contact us (schliessfach@fs-ei.de).
+    If you have any questions or if something is broken, please contact us.
 
     
 
-    LUGGGI (Lukas Beck)
+    Lugggi
+
+    Email: schliessfach@fs-ei.de
+    Telegram/WhatsApp: +49 1516 4671308
+
     """,
 
-    """\
-    <html>
-        <p>For English see below!<br>
-        <br>
-        Hallo,<br>
-        hier ist dein Vertrag für das Schließfach.<br>
-        Die Nutzungsbedingungen findest du unter <a href="https://fs-ei.de/de/services/lockers_guidelines/">Nutzerbedingungen</a>. <br>
-        Wenn du Fragen hast oder etwas kaputt ist, melde dich gerne (<a href = "mailto: schliessfach@fs-ei.de">schliessfach@fs-ei.de</a>).<br>
-        <br>
-        Gruß<br>
-        <br>
-        LUGGGI (Lukas Beck)<br>
-        <hr>
-
-        <br>
-        Hello,<br>
-        Here is your contract for the locker.<br>
-        You can find the terms of use at <a href="https://fs-ei.de/de/services/lockers_guidelines/">Nutzerbedingungen</a>. <br>
-        If you have any questions or if something is broken, please contact us (<a href = "mailto: schliessfach@fs-ei.de">schliessfach@fs-ei.de</a>).<br>
-        <br>
-        Greetings<br>
-        <br>
-        LUGGGI (Lukas Beck)
-        </p>
-    </html>
+    """
     """
 )
 
