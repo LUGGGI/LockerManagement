@@ -1,10 +1,9 @@
 '''
 This Module handles the interaction with the spreadsheet.
 Allows for reading, updating and checking of entries
-
-Author: Lukas Beck
-Date: 16.07.2023
 '''
+__author__ = "Lukas Beck"
+__date__ = "17.10.2023"
 
 from datetime import datetime
 import openpyxl
@@ -37,25 +36,41 @@ class Spreadsheet:
         self.file = file
 
     def print(self):
-        'print the whole excel file'
+        '''Print the whole excel file.'''
         for row in self.worksheet.iter_rows(max_row=self.number_of_rows, max_col=self.number_of_cols, values_only=True):
             for cell in row:
                 print("%s, " %cell, end =" ")
             print()
+    
 
-    def get_entry(self, number: int) -> dict:
-        'returns a dictionary with all values for one row/entry in the sheet'
-        entry = {}
-        column = 'A'
-        for value in self.worksheet[number+1]:
-            entry[self.worksheet[column+"1"].value] = value.value
-            column  = chr(ord(column)+1) # get next letter in alphabet
-        return entry
+    def remove_entry(self, locker_nr: int) -> bool:
+        '''Removes the entry for the given locker number from the spreadsheet.
+        
+        Args:
+            locker_nr(int): Number of the locker.
+        '''
+        spreadsheet_entry = self.get_entry(locker_nr)
+        closed_entry = {
+            "number": locker_nr,
+            "name": None,
+            "since": None,
+            "extended": None,
+            "email": None,
+            "collateral": None,
+            "rented": None,
+            "keys": spreadsheet_entry["keys"]+1,
+            "fs": None
+        }
+        return self.update_entry(closed_entry)
+
 
     def update_entry(self, new_entry: dict) -> bool:
-        'gets an entry dictionary and updates the spreadsheet accordingly'
+        '''Updates the spreadsheet according to the given entry.
+        
+        Args:
+            new_entry(dict): Values to update the spreadsheet with.
+        '''
         row =  str(new_entry["number"]+1)
-        # self.check_entry(entry)
 
         spreadsheet_entry = self.get_entry(new_entry["number"])
         updated = False
@@ -73,16 +88,13 @@ class Spreadsheet:
                 self.worksheet[self.COLUMNS[key][1]+row] = value
                 print("update: %10s: %30s, replacing: %s" %(key, value, spreadsheet_entry[key]))
                 updated = True
-        
-        if updated and not extended:
-            # code for closing contract
-            if new_entry["rented"] == None:
-                self.worksheet[self.COLUMNS["keys"][1]+row] = spreadsheet_entry["keys"]+1
-                self.worksheet[self.COLUMNS["fs"][1]+row] = None
-                print("update: %10s: %30s, replacing: %s" %("keys", spreadsheet_entry["keys"]+1, spreadsheet_entry["keys"])) 
-                print("update: %10s: %30s, replacing: %s" %("fs", None, spreadsheet_entry["fs"]))  
-                return True
-            
+
+        # return here if entry was removed
+        if new_entry["name"] == None:
+            return updated
+
+
+        if updated and not extended:            
             # change number of keys in fs-office
             if spreadsheet_entry["keys"] < 1:
                 raise Exception("No keys left")
@@ -98,6 +110,22 @@ class Spreadsheet:
         
         return updated
 
+
+    def get_entry(self, locker_nr: int) -> dict:
+        '''Returns a dictionary with all values for given row/entry in the spreadsheet.
+        
+        Args:
+            locker_nr(int): locker_nr(int): Number of the locker.
+        Returns:
+            dict: values in given row/entry.
+        '''
+        entry = {}
+        column = 'A'
+        for value in self.worksheet[locker_nr+1]:
+            entry[self.worksheet[column+"1"].value] = value.value
+            column  = chr(ord(column)+1) # get next letter in alphabet
+        return entry
+    
 
     def check_entry(self, entry: dict, check_order=False):
         'checks if the key and the associated type of the value are those specified in columns, can also check the order'

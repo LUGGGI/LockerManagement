@@ -1,9 +1,9 @@
 '''
-This Module handles the data from the "Schliessfaecher" from
-
-Author: Lukas Beck
-Date: 16.07.2023
+This Module handles the data from the "Schliessfaecher" form.
 '''
+__author__ = "Lukas Beck"
+__date__ = "17.10.2023"
+
 
 from pypdf import PdfReader, PdfWriter
 from pypdf.generic import BooleanObject, NameObject, IndirectObject
@@ -18,11 +18,20 @@ class Contract:
         self.entries = {}
 
     def read(self, check_if_closed=False):
+        '''Reads the contract and adds the entries to self.entries.
+        
+        Args:
+            check_if_closed: If True closed Datum will be checkt for value
+        Raises:
+            NotContractError: File is not a contract.
+            MainFieldMissingError: One of the main fields is not found (Number, Name, Date, Email).
+            NotClosedError: Contract is not closed (no date given in closed section).
+        '''
         
         try:
             reader = PdfReader(self.file)
         except:
-            raise Exception("File: " + self.file + " is not a contract")
+            raise NotContractError("File: " + self.file + " is not a contract")
 
         fields = reader.get_form_text_fields()
         try:
@@ -31,18 +40,16 @@ class Contract:
             self.entries["since"] = datetime.strptime(fields["Datum"], "%d.%m.%Y")
             self.entries["email"] = str(fields["MailAdresse"])
         except:
-            raise Exception(self.file + ": One of the main fields is not found (Number, Name, Date, Email)")
+            raise MainFieldMissingError(self.file + ": One of the main fields is not found (Number, Name, Date, Email)")
         self.entries["collateral"] = int(50)
         self.entries["rented"] = int(1)
 
         if check_if_closed:
-            if fields["Datum_3"] != None:
-                print("Contract " + self.file + " is closed")
-                self.clear_contract()
-            else:
-                return
+            if fields["Datum_3"] == None:
+                raise NotClosedError(f"Contract {self.file} is not closed")
         
         print(self.entries)
+
 
     def write(self, entry: dict):
         '''Write data in entry into Form, panics if field (key) is not found
@@ -85,11 +92,13 @@ class Contract:
         except Exception as e:
             print('set_need_appearances_writer() catch : ', repr(e))
             return writer
-        
 
-    def clear_contract(self):
-        self.entries["name"] = None
-        self.entries["since"] = None
-        self.entries["email"] = None
-        self.entries["collateral"] = None
-        self.entries["rented"] = None
+
+class NotContractError(Exception):
+    '''File is not a contract.'''
+
+class MainFieldMissingError(Exception):
+    '''One of the main fields is not found (Number, Name, Date, Email).'''
+
+class NotClosedError(Exception):
+    '''Contract is not closed (no date given in closed section).'''
