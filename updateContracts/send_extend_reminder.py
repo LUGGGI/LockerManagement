@@ -1,53 +1,67 @@
 '''
 This Program reads all the contracts in the "ContractsNew" folder.
 It can add the values to the Locker.xlsx and send an email to the contract holder with the contract attached
-
-Author: Lukas Beck
-Date: 16.07.2023
 '''
+__author__ = "Lukas Beck"
+__date__ = "17.10.2023"
+
 import logging
 import datetime
 from os import listdir, rename
 import shutil
 import copy
 
-from contract_handler import Contract
-from spreadsheet import Spreadsheet
-from email_handler import Email
-from email_messages import check_with_new_contract_25, check_with_new_contract, check_with_new_contract_fs_25, check_with_new_contract_fs
+from lib.locker_parent import LockerParent
+from lib.contract_handler import Contract
+from lib.spreadsheet import Spreadsheet
+from lib.email_handler import Email
+# from lib.email_messages import check_with_new_contract_25, check_with_new_contract, check_with_new_contract_fs_25, check_with_new_contract_fs
 
 
 NEW_CONTRACT_DIR = "../ContractsNew"
-OLD_CONTRACT_DIR = "../ContractsOld"
 SAVED_CONTRACT_DIR = "../Contracts"
-SPREADSHEET = "../Locker.xlsx"
 
-class Main:
+class SendExtendReminder(LockerParent):
     def __init__(self):
+        super().__init__(NEW_CONTRACT_DIR, SAVED_CONTRACT_DIR)
         
-        for _ in range (5):
-            try:
-                spreadsheet = Spreadsheet(SPREADSHEET)
-            except PermissionError:
-                input("Please close all programs that have the spreadsheet open and start program again, press Enter to continue: ")
-                continue
-            except Exception as error:
-                logging.exception(error)
-                quit()
-            else:
-                break
+        self.load_spreadsheet()
             
-        table = spreadsheet.get_table()
+        table = self.spreadsheet.get_table()
         
         
-        all_rented = list(filter(lambda x: x[8] == 1, table))
-        no_error = list(filter(lambda x: x[10] != 1, all_rented))
-        all_not_fs = list(filter(lambda x: x[9] != 1, no_error))
-        all_fs = list(filter(lambda x: x[9] == 1, no_error))
-        all_old = list(filter(lambda x: x[2] < datetime.datetime(2022, 10, 20), all_fs))
+        rented = list(filter(lambda x: x[8] == 1, table))
+        no_error = list(filter(lambda x: x[10] != 1, rented))
+        old = list(filter(lambda x: x[2] < datetime.datetime(2022, 10, 20), no_error))
+        not_extended = list(filter(lambda x: (x[3] == None) or (x[3] < datetime.datetime(2022, 10, 20)), old))
 
-        old_50 = list(filter(lambda x: x[5] == 50, all_old))
-        old_25 = list(filter(lambda x: x[5] == 25, all_old))
+        all_not_fs = list(filter(lambda x: x[9] != 1, not_extended))
+        all_fs = list(filter(lambda x: x[9] == 1, not_extended))
+
+
+        all_fs_50 = list(filter(lambda x: x[5] == 50, all_fs))
+        all_fs_25 = list(filter(lambda x: x[5] == 25, all_fs))
+
+        all_not_fs_50 = list(filter(lambda x: x[5] == 50, all_not_fs))
+        all_not_fs_25 = list(filter(lambda x: x[5] == 25, all_not_fs))
+
+        print("\nFS")
+        print("\nAll with 25€ collateral")
+        for entry in all_fs_25:
+            print(entry)
+        print("\nAll with 50€ collateral")
+        for entry in all_fs_50:
+            print(entry)
+
+        print("\nNot FS")
+        print("\nAll with 25€ collateral")
+        for entry in all_not_fs_25:
+            print(entry)
+        print("\nAll with 50€ collateral")
+        for entry in all_not_fs_50:
+            print(entry)
+        
+        exit()
 
         data_for_new_contracts_25 = []
         for entry in old_25:
@@ -167,5 +181,5 @@ class Main:
     def close_contract(self):
         pass
 
-main = Main()
+SendExtendReminder()
 input("Press enter to exit: ")  

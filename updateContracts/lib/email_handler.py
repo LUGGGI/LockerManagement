@@ -4,7 +4,7 @@ This Module handles email communication for Locker
 Author: Lukas Beck
 Date: 16.07.2023
 '''
-from email_messages import Message, new_contract, check_with_new_contract
+from lib.email_messages import Message, new_contract, check_with_new_contract
 
 import smtplib, ssl
 import imaplib

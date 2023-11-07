@@ -7,18 +7,15 @@ __author__ = "Lukas Beck"
 __date__ = "17.10.2023"
 
 import logging
-from os import listdir
 
-from main import Main
-from contract_handler import Contract, NotClosedError
+from lib.locker_parent import LockerParent
+from lib.contract_handler import Contract, NotClosedError
 
-
-NEW_CONTRACT_DIR = "../ContractsNew"
 OLD_CONTRACT_DIR = "../ContractsOld"
 SAVED_CONTRACT_DIR = "../Contracts"
 SPREADSHEET = "../Locker.xlsx"
 
-class RemoveContracts(Main):
+class RemoveContracts(LockerParent):
     def __init__(self):
         super().__init__(SAVED_CONTRACT_DIR, OLD_CONTRACT_DIR)
 
