@@ -4,7 +4,7 @@ This Module handles email communication for Locker
 Author: Lukas Beck
 Date: 16.07.2023
 '''
-from lib.email_messages import Message, new_contract, check_with_new_contract
+from lib.email_messages import new_contract, check_with_new_contract
 
 import smtplib, ssl
 import imaplib
@@ -22,11 +22,15 @@ SENDER = "schliessfach@fs-ei.de"
 HOST = "mail.fs-ei.de"
 PORT = 465
 
-DEBUG = False # debug with MailTrap
+DEBUG = True # debug with MailTrap
 
 
 class Email:
-    'send a predefined email to a new locker user with their contract'
+    '''Send emails.'''
+
+    def __init__(self) -> None:
+        '''Initializes the Email handler.'''
+        self.emails: list = []
 
     def send_finished_contract(self, receiver: str, contract: str):
         '''Send the contract to the email receiver.
@@ -34,10 +38,10 @@ class Email:
         :receiver: email-address to send to
         :contract: contract to send
         '''
-        self.send_email(receiver, message=new_contract, subject="Schliessfach Vertrag und Nutzerbedingungen", attachment=contract)
+        self.create_email(receiver, message=new_contract, subject="Schliessfach Vertrag und Nutzerbedingungen", attachment=contract)
         
 
-    def send_email(self, receiver: str, message: Message, subject: str, attachment: str=None):
+    def create_email(self, receiver: str, message: Message, subject: str, attachment: str=None):
         '''Create an send an eMail.
         
         :receiver: email-address to send to

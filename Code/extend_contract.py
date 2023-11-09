@@ -6,7 +6,6 @@ __author__ = "Lukas Beck"
 __date__ = "17.10.2023"
 
 import logging
-from os import rename
 from datetime import datetime
 
 from lib.locker_parent import LockerParent

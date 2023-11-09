@@ -84,7 +84,7 @@ class SendExtendReminder(LockerParent):
             message.html = message.html.replace("{number}", str(entry["number"]))
             # print(message.plain_text)
             subject = "Schließfachverlängerung (locker renewal)"
-            Email().send_email(entry["email"], message, subject, f"{NEW_CONTRACT_DIR}/{entry['number']}.pdf")
+            Email().create_email(entry["email"], message, subject, f"{NEW_CONTRACT_DIR}/{entry['number']}.pdf")
             print(f"{entry['number']}: {entry['name']}, Done")
 
             
@@ -103,7 +103,7 @@ class SendExtendReminder(LockerParent):
             message.html = message.html.replace("{number}", str(entry["number"]))
             # print(message.plain_text)
             subject = "Schließfachverlängerung (locker renewal)"
-            Email().send_email(entry["email"], message, subject, f"{NEW_CONTRACT_DIR}/{entry['number']}.pdf")
+            Email().create_email(entry["email"], message, subject, f"{NEW_CONTRACT_DIR}/{entry['number']}.pdf")
             print(f"{entry['number']}: {entry['name']}, Done")
 
             
