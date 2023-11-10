@@ -5,11 +5,10 @@ __author__ = "Lukas Beck"
 __date__ = "07.11.2023"
 
 import logging
-from os import listdir, getcwd
+from os import listdir
 from shutil import move
 
 from lib.spreadsheet import Spreadsheet
-from lib.email_handler import Email
 
 NEW_CONTRACT_DIR = "../ContractsNew"
 OLD_CONTRACT_DIR = "../ContractsOld"
@@ -20,10 +19,8 @@ class LockerParent:
     def __init__(self, work_folder: str, save_folder: str):
         '''Initializes the module.'''
         self.spreadsheet: Spreadsheet = None
-        self.email = None
         self.work_folder = work_folder
         self.save_folder = save_folder
-        print(getcwd())
         self.filenames = listdir(self.work_folder)
 
 
@@ -48,21 +45,6 @@ class LockerParent:
         if save.lower() != "n":       
             self.spreadsheet.workbook.save(self.spreadsheet.file)  
             print(" -> Saved")
-
-
-    def send_contract(self, email_address: str, filename: str):
-        '''Send given contract per email.
-        
-        Args:
-            email_address(str): Email address to send to.
-            filename(str): name of the filename to send.
-        '''
-        if self.email == None:
-            self.email = Email()
-        send_email = input("Send Email? (Y/n): ")
-        if send_email.lower() != "n":
-            self.email.send_finished_contract(email_address, f"{self.work_folder}/{filename}")
-            print(" -> Sent")
     
 
     def move_contract(self, filename: str):

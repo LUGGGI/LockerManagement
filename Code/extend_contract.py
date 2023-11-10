@@ -33,7 +33,7 @@ class ExtendContract(LockerParent):
                 
                 if input("Extend this Contract? (Y/n)").lower() != "n":
                     entry["extended"]  = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-                    print(f"Updated entry: {entry}")
+                    print(f"Updated entry: \n{entry}")
 
             except Exception as e:
                 logging.exception(e)

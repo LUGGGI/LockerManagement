@@ -10,6 +10,7 @@ from os import rename
 
 from lib.locker_parent import LockerParent
 from lib.contract_handler import Contract
+from lib.email_handler import Email
 
 
 NEW_CONTRACT_DIR = "../ContractsNew"
@@ -23,6 +24,7 @@ class AddContract(LockerParent):
         print(f"This Programm adds the contracts in the {self.work_folder} folder to the spreadsheets.")
         
         self.load_spreadsheet()
+        email = Email()
 
         
         for filename in self.filenames:
@@ -47,13 +49,19 @@ class AddContract(LockerParent):
                 updated = self.spreadsheet.update_entry(contract.entries)
 
                 if updated:
-                    self.save_spreadsheet()     
-                    self.send_contract(contract.entries["email"], filename)
+                    self.save_spreadsheet()
+                    email.create_contract_email(
+                        contract.entries["email"], 
+                        f"{self.work_folder}/{filename}"
+                    )
                     self.move_contract(filename)
                             
             except Exception as e:
                 logging.exception(e)
                 continue
+        
+        print("Sending email...")
+        email.send_emails()
 
 
 if __name__ == "__main__":
