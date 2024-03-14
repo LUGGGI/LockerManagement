@@ -59,9 +59,9 @@ class AddContract(LockerParent):
             except Exception as e:
                 logging.exception(e)
                 continue
-        
-        print("Sending email...")
-        email.send_emails()
+        if email.emails.__len__() > 0:
+            print("Sending email...")
+            email.send_emails()
 
 
 if __name__ == "__main__":

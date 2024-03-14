@@ -68,7 +68,7 @@ class SendExtendReminder(LockerParent):
             email.create_email(
                 receiver=entry[4], 
                 message=message_with_data, 
-                subject="Schließfachverlängerung (locker renewal)", 
+                subject="Info über Entzug deines Schließfachs", 
                 attachment="../ContractsNew/Formular_normal_sign.pdf"
             )
 
