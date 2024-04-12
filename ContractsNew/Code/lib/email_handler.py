@@ -5,7 +5,7 @@ Author: Lukas Beck
 Date: 16.07.2023
 '''
 try:
-    from lib.email_messages import new_contract
+    from Code.lib.email_messages import new_contract
 except ModuleNotFoundError:
     from email_messages import new_contract
 

@@ -6,10 +6,9 @@ __date__ = "10.11.2023"
 
 import datetime
 
-from lib.locker_parent import LockerParent
-from lib.contract_handler import Contract
-from lib.email_handler import Email
-from lib.email_messages import check_with_new_contract_25, check_with_new_contract, check_with_new_contract_fs_25, check_with_new_contract_fs
+from Code.lib.locker_parent import LockerParent
+from Code.lib.email_handler import Email
+from Code.lib.email_messages import check_with_new_contract_25, check_with_new_contract, check_with_new_contract_fs_25, check_with_new_contract_fs
 
 
 NEW_CONTRACT_DIR = "../ContractsNew"

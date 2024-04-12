@@ -8,12 +8,12 @@ import logging
 from os import listdir
 from shutil import move
 
-from lib.spreadsheet import Spreadsheet
+from Code.lib.spreadsheet import Spreadsheet
 
 NEW_CONTRACT_DIR = "../ContractsNew"
 OLD_CONTRACT_DIR = "../ContractsOld"
 SAVED_CONTRACT_DIR = "../Contracts"
-SPREADSHEET = "../Locker.xlsx"
+SPREADSHEET = "Locker.xlsx"
 
 class LockerParent:
     def __init__(self, work_folder: str, save_folder: str):

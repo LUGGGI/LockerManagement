@@ -8,7 +8,7 @@ __date__ = "17.10.2023"
 import logging
 from datetime import datetime
 
-from lib.locker_parent import LockerParent
+from Code.lib.locker_parent import LockerParent
 
 
 NEW_CONTRACT_DIR = "../ContractsNew"

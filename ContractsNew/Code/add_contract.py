@@ -8,9 +8,9 @@ __date__ = "17.10.2023"
 import logging
 from os import rename
 
-from lib.locker_parent import LockerParent
-from lib.contract_handler import Contract
-from lib.email_handler import Email
+from Code.lib.locker_parent import LockerParent
+from Code.lib.contract_handler import Contract
+from Code.lib.email_handler import Email
 
 
 NEW_CONTRACT_DIR = "../ContractsNew"

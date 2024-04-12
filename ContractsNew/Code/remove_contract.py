@@ -8,8 +8,8 @@ __date__ = "17.10.2023"
 
 import logging
 
-from lib.locker_parent import LockerParent
-from lib.contract_handler import Contract, NotClosedError
+from Code.lib.locker_parent import LockerParent
+from Code.lib.contract_handler import Contract, NotClosedError
 
 OLD_CONTRACT_DIR = "../ContractsOld"
 SAVED_CONTRACT_DIR = "../Contracts"
