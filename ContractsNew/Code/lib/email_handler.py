@@ -12,6 +12,7 @@ except ModuleNotFoundError:
 import smtplib, ssl
 import imaplib
 import time
+from json import load
 
 from email import encoders
 from email.mime.base import MIMEBase
@@ -20,8 +21,12 @@ from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate, make_msgid
 
 SENDER = "schliessfach@fs-ei.de"
-***REMOVED***
-***REMOVED***
+# Login file has to be a json file with the following structure:
+# {
+#     "user": "username",
+#     "password": "password"
+# }
+LOGIN_FILE = "C:/Users/LUGGGI/.ssh/login.json" # file should not be in git repository
 HOST = "mail.fs-ei.de"
 PORT = 465
 
@@ -34,6 +39,11 @@ class Email:
     def __init__(self) -> None:
         '''Initializes the Email handler.'''
         self.emails: list = []
+        # get user and password from login file
+        with open(LOGIN_FILE, "r") as file:
+            login = load(file)
+            self.user = login["user"]
+            self.password = login["password"]
 
 
     def create_contract_email(self, email_address: str, contract: str):
@@ -101,10 +111,10 @@ class Email:
             # Create a secure SSL context and send email 
             context = ssl.create_default_context()
             with smtplib.SMTP_SSL(HOST, PORT, context=context) as smtp_server:
-                smtp_server.login(USER, PASSWORD)
+                smtp_server.login(self.user, self.password)
                 # Move email to Sent folder
                 with imaplib.IMAP4_SSL(HOST, 993) as imap_server:
-                    imap_server.login(USER, PASSWORD)
+                    imap_server.login(self.user, self.password)
                     for email in self.emails:
                         smtp_server.sendmail(SENDER, email["To"], email.as_string())
                         imap_server.append("Sent", '\\Seen', imaplib.Time2Internaldate(time.time()), email.as_string().encode("utf8"))
@@ -147,6 +157,6 @@ class Email:
 if __name__ == "__main__":
     email = Email()
     print(email.convert_to_ascii("lukäöüéèßs"))
-    # email.create_email("lbeck@fs-ei.de", "Hello test", "TEst123", "../ContractsNew/Formular_normal_sign.pdf")
-    # email.create_contract_email("beck-lukas@gmx.net", "../ContractsNew/Formular_normal_sign.pdf")
-    # email.send_emails()
+    email.create_email("lbeck@fs-ei.de", "Hello test", "TEst123", "ContractsNew/Formular_normal_sign.pdf")
+    email.create_contract_email("beck-lukas@gmx.net", "ContractsNew/Formular_normal_sign.pdf")
+    email.send_emails()
