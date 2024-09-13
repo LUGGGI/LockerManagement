@@ -1,8 +1,16 @@
 '''
 Execute programs
+
+This program needs the following directory structure:
+- Contracts
+- ContractsNew
+    - Code
+    - Locker.xlsx
+    - main.py
+- ContractsOld
 '''
 __author__ = "Lukas Beck"
-__date__ = "07.11.2023"
+__date__ = "13.09.2024"
 
 from Code.add_contract import AddContract
 from Code.extend_contract import ExtendContract
