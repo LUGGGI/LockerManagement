@@ -11,25 +11,47 @@ import openpyxl
 
 class Spreadsheet:
     'handles interaction with spreadsheets'
+    # COLUMNS = {
+    #     # key:          (type, column)
+    #     "number":       (int, 'A'),
+    #     "name":         (str, 'B'),
+    #     "since":        (datetime, 'C'),
+    #     "extended":     (datetime, 'D'),
+    #     "email":        (str, 'E'),
+    #     "collateral":   (int, 'F'),
+    #     "comment":      (str, 'G'),
+    #     "keys":         (int, 'H'),
+    #     "rented":       (int, 'I'),
+    #     "fs":           (int, 'J'),
+    #     "problem":      (int, 'K'),
+    #     "revoked":      (int, 'L'),
+    #     "cleared":      (int, 'M'),
+    #     "damage":       (int, 'N'),
+    #     "extend_code":  (int, 'O'),
+    #     "extend_check": (int, 'P'),
+    # }
     COLUMNS = {
-        # key:          (type, column)
-        "number":       (int, 'A'),
-        "name":         (str, 'B'),
-        "since":        (datetime, 'C'),
-        "extended":     (datetime, 'D'),
-        "email":        (str, 'E'),
-        "collateral":   (int, 'F'),
-        "comment":      (str, 'G'),
-        "keys":         (int, 'H'),
-        "rented":       (int, 'I'),
-        "fs":           (int, 'J'),
-        "problem":      (int, 'K'),
-        "revoked":      (int, 'L'),
-        "cleared":      (int, 'M'),
+        # key:          column
+        "number":       'A',
+        "name":         'B',
+        "since":        'C',
+        "extended":     'D',
+        "email":        'E',
+        "collateral":   'F',
+        "comment":      'G',
+        "keys":         'H',
+        "rented":       'I',
+        "fs":           'J',
+        "problem":      'K',
+        "revoked":      'L',
+        "cleared":      'M',
+        "damage":       'N',
+        "extend_code":  'O',
+        "extend_check": 'P',
     }
 
     number_of_rows = 409
-    number_of_cols = 13
+    number_of_cols = 16
     def __init__(self, file: str) -> None:
         self.workbook = openpyxl.load_workbook(file)
         self.worksheet = self.workbook.active
@@ -63,67 +85,105 @@ class Spreadsheet:
         }
         return self.update_entry(closed_entry)
 
+    def extend_entry(self, locker_nr: int) -> bool:
+        '''Extends the given locker by updating the extended date.
+        
+        Args:
+            locker_nr(int): Number of the locker to extend.
+        '''
+        entry = dict({"number": locker_nr, "extended": datetime.now()})
+        return self.update_entry(entry)
 
-    def update_entry(self, new_entry: dict) -> bool:
+
+    def update_entry(self, updated_entry: dict) -> bool:
         '''Updates the spreadsheet according to the given entry.
         
         Args:
-            new_entry(dict): Values to update the spreadsheet with.
+            updated_entry(dict): Values to update the spreadsheet with.
+        Returns:
+            bool: True if entry was updated, False if not.
+        Raises:
+            KeyError: If key is not found in the spreadsheet.
         '''
-        row =  str(new_entry["number"]+1)
-
-        spreadsheet_entry = self.get_entry(new_entry["number"])
         updated = False
+        # get row number of entry (is locker number +1)
+        row =  str(updated_entry["number"]+1)
+
+        # get the old entry found in the spreadsheet
+        current_entry = self.get_entry(updated_entry["number"])
+
+
+        for key, value in updated_entry.items():
+            # check if key is a valid key
+            try:
+                current_entry[key]
+            except KeyError:
+                raise KeyError(f"Key {key} not found in current spreadsheet entry")
+            
+            # update value if different
+            if value != current_entry[key]:
+                self.worksheet[self.COLUMNS[key]+row] = value
+                print("update: %10s: %30s, replacing: %s" %(key, value, current_entry[key]))
+                updated = True
+        
+        return updated
         extended = False
 
-        if new_entry["name"] == spreadsheet_entry["name"]:
-            if new_entry["since"] != spreadsheet_entry["since"]:
-                new_entry["extended"] = new_entry["since"]
-                new_entry["since"] = spreadsheet_entry["since"]
-                print(f"Contract extended with date: {new_entry['extended']}")
+        if updated_entry["name"] == current_entry["name"]:
+            if updated_entry["since"] != current_entry["since"]:
+                updated_entry["extended"] = updated_entry["since"]
+                updated_entry["since"] = current_entry["since"]
+                print(f"Contract extended with date: {updated_entry['extended']}")
                 extended = True
 
-        for key, value in new_entry.items():
-            if value != spreadsheet_entry[key]: # only update value if different
-                self.worksheet[self.COLUMNS[key][1]+row] = value
-                print("update: %10s: %30s, replacing: %s" %(key, value, spreadsheet_entry[key]))
-                updated = True
+        
 
         # return here if entry was removed
-        if new_entry["name"] == None:
+        if updated_entry["name"] == None:
             return updated
 
 
         if updated and not extended:            
             # change number of keys in fs-office
-            if spreadsheet_entry["keys"] < 1:
+            if current_entry["keys"] < 1:
                 raise Exception("No keys left")
-            self.worksheet[self.COLUMNS["keys"][1]+row] = spreadsheet_entry["keys"]-1
-            print("update: %10s: %30s, replacing: %s" %("keys", spreadsheet_entry["keys"]-1, spreadsheet_entry["keys"])) 
+            self.worksheet[self.COLUMNS["keys"][1]+row] = current_entry["keys"]-1
+            print("update: %10s: %30s, replacing: %s" %("keys", current_entry["keys"]-1, current_entry["keys"])) 
 
             # check if someone is from fs
-            is_fs = input(new_entry["name"] + " is from fs (y/N): ")
+            is_fs = input(updated_entry["name"] + " is from fs (y/N): ")
             if is_fs.lower() == "y":
-                new_entry["fs"] = 1
+                updated_entry["fs"] = 1
                 self.worksheet[self.COLUMNS["fs"][1]+row] = int(1)
-                print("update: %10s: %30s, replacing: %s" %("fs", 1, spreadsheet_entry["fs"]))  
+                print("update: %10s: %30s, replacing: %s" %("fs", 1, current_entry["fs"]))  
         
         return updated
+
 
 
     def get_entry(self, locker_nr: int) -> dict:
         '''Returns a dictionary with all values for given row/entry in the spreadsheet.
         
         Args:
-            locker_nr(int): locker_nr(int): Number of the locker.
+            locker_nr(int): Number of the locker.
         Returns:
             dict: values in given row/entry.
         '''
         entry = {}
         column = 'A'
         for value in self.worksheet[locker_nr+1]:
+            try:
+                key = self.worksheet[column+"1"].value
+                if self.COLUMNS[key] != column:
+                    raise ValueError(f"Key value pair {key}: {column} not found in COLUMN dictionary, please update it")
+            except KeyError:
+                raise KeyError(f"Key {key} not found in current spreadsheet entry")
+            except ValueError:
+                raise
+            # get key from first row and value from current row
             entry[self.worksheet[column+"1"].value] = value.value
             column  = chr(ord(column)+1) # get next letter in alphabet
+
         return entry
     
 
@@ -139,9 +199,16 @@ class Spreadsheet:
             if not isinstance(value, self.COLUMNS[key][0]):
                 raise Exception("type must be %s but is %s; Value is %s" %(self.COLUMNS[key][0], type(value), value))
             
+    # def get_table(self):
+    #     '''Returns the whole locker table'''
+    #     table = []
+    #     for row in self.worksheet.iter_rows(max_row=self.number_of_rows, max_col=self.number_of_cols, values_only=True):
+    #         table.append(row)
+    #     return table
+    
     def get_table(self):
-        '''Returns the whole locker table'''
+        '''Returns the whole locker table as a list of dictionaries'''
         table = []
-        for row in self.worksheet.iter_rows(max_row=self.number_of_rows, max_col=self.number_of_cols, values_only=True):
-            table.append(row)
+        for row in range(self.number_of_rows):
+            table.append(self.get_entry(row))
         return table
