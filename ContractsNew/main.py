@@ -10,12 +10,14 @@ This program needs the following directory structure:
 - ContractsOld
 '''
 __author__ = "Lukas Beck"
-__date__ = "13.09.2024"
+__date__ = "09.12.2024"
 
 from Code.add_contract import AddContract
 from Code.extend_contract import ExtendContract
 from Code.remove_contract import RemoveContracts
 from Code.send_extend_reminder import SendExtendReminder
+
+# Find file path and other global variables in ContractsNew\Code\lib\locker_parent.py
 
 if __name__ == "__main__":
     while(True):

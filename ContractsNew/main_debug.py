@@ -19,4 +19,4 @@ from Code.send_extend_reminder import SendExtendReminder
 from Code.extend_code_generator import ExtendCodeGenerator
 
 if __name__ == "__main__":
-    ExtendCodeGenerator()
+    AddContract()

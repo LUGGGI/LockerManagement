@@ -3,22 +3,20 @@ This Program reads all the contracts in the "ContractsNew" folder.
 It can add the values to the Locker.xlsx and send an email to the contract holder with the contract attached
 '''
 __author__ = "Lukas Beck"
-__date__ = "17.10.2023"
+__date__ = "09.12.2024"
 
 import logging
 from os import rename
 
-from Code.lib.locker_parent import LockerParent
+from Code.lib.locker_parent import LockerParent, NEW_CONTRACT_DIR, SAVED_CONTRACT_DIR
 from Code.lib.contract_handler import Contract
 from Code.lib.email_handler import Email
 
 
-NEW_CONTRACT_DIR = "../ContractsNew"
-SAVED_CONTRACT_DIR = "../Contracts"
-
-
 class AddContract(LockerParent):
+    '''This class reads all the contracts in the "ContractsNew" folder and adds them to the Locker.xlsx.'''
     def __init__(self):
+        '''Initializes the module.'''
         super().__init__(NEW_CONTRACT_DIR, SAVED_CONTRACT_DIR)
 
         print(f"This Programm adds the contracts in the {self.work_folder} folder to the spreadsheets.")

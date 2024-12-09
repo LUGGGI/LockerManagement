@@ -13,7 +13,9 @@ from Code.lib.spreadsheet import Spreadsheet
 NEW_CONTRACT_DIR = "../ContractsNew"
 OLD_CONTRACT_DIR = "../ContractsOld"
 SAVED_CONTRACT_DIR = "../Contracts"
-SPREADSHEET = "Locker.xlsx"
+SPREADSHEET = "Locker copy.xlsx"
+
+# Find variables for email and fs_server  in their respective files
 
 class LockerParent:
     def __init__(self, work_folder: str, save_folder: str):

@@ -3,7 +3,7 @@ This Module handles the interaction with the spreadsheet.
 Allows for reading, updating and checking of entries
 '''
 __author__ = "Lukas Beck"
-__date__ = "17.10.2023"
+__date__ = "09.12.2024"
 
 from datetime import datetime
 import openpyxl
@@ -11,25 +11,7 @@ import openpyxl
 
 class Spreadsheet:
     'handles interaction with spreadsheets'
-    # COLUMNS = {
-    #     # key:          (type, column)
-    #     "number":       (int, 'A'),
-    #     "name":         (str, 'B'),
-    #     "since":        (datetime, 'C'),
-    #     "extended":     (datetime, 'D'),
-    #     "email":        (str, 'E'),
-    #     "collateral":   (int, 'F'),
-    #     "comment":      (str, 'G'),
-    #     "keys":         (int, 'H'),
-    #     "rented":       (int, 'I'),
-    #     "fs":           (int, 'J'),
-    #     "problem":      (int, 'K'),
-    #     "revoked":      (int, 'L'),
-    #     "cleared":      (int, 'M'),
-    #     "damage":       (int, 'N'),
-    #     "extend_code":  (int, 'O'),
-    #     "extend_check": (int, 'P'),
-    # }
+
     COLUMNS = {
         # key:          column
         "number":       'A',
@@ -50,14 +32,35 @@ class Spreadsheet:
         "extend_check": 'P',
     }
 
+    COLUMNS_TYPES = {
+        "number":       int,
+        "name":         str,
+        "since":        datetime,
+        "extended":     datetime,
+        "email":        str,
+        "collateral":   int,
+        "comment":      str,
+        "keys":         int,
+        "rented":       int,
+        "fs":           int,
+        "problem":      int,
+        "revoked":      int,
+        "cleared":      int,
+        "damage":       int,
+        "extend_code":  int,
+        "extend_check": int,
+    }
+
     number_of_rows = 409
     number_of_cols = 16
+
     def __init__(self, file: str) -> None:
         self.workbook = openpyxl.load_workbook(file)
         self.worksheet = self.workbook.active
         self.file = file
 
-    def print(self):
+
+    def print_whole_sheet(self):
         '''Print the whole excel file.'''
         for row in self.worksheet.iter_rows(max_row=self.number_of_rows, max_col=self.number_of_cols, values_only=True):
             for cell in row:
@@ -85,6 +88,7 @@ class Spreadsheet:
         }
         return self.update_entry(closed_entry)
 
+
     def extend_entry(self, locker_nr: int) -> bool:
         '''Extends the given locker by updating the extended date.
         
@@ -104,6 +108,7 @@ class Spreadsheet:
             bool: True if entry was updated, False if not.
         Raises:
             KeyError: If key is not found in the spreadsheet.
+            TypeError: If type of value is not as specified in COLUMNS_TYPES.
         '''
         updated = False
         # get row number of entry (is locker number +1)
@@ -112,7 +117,6 @@ class Spreadsheet:
         # get the old entry found in the spreadsheet
         current_entry = self.get_entry(updated_entry["number"])
 
-
         for key, value in updated_entry.items():
             # check if key is a valid key
             try:
@@ -120,7 +124,12 @@ class Spreadsheet:
             except KeyError:
                 raise KeyError(f"Key {key} not found in current spreadsheet entry")
             
-            # update value if different
+            # Check if the the associated type of the value are those specified in COLUMNS_TYPES.
+            if not isinstance(value, self.COLUMNS_TYPES[key]):
+                raise TypeError(f"Type must be {self.COLUMNS_TYPES[key]} but is {type(value)}; Value is {value}")
+            
+            
+            # update value only if different
             if value != current_entry[key]:
                 self.worksheet[self.COLUMNS[key]+row] = value
                 print("update: %10s: %30s, replacing: %s" %(key, value, current_entry[key]))
@@ -185,19 +194,6 @@ class Spreadsheet:
             column  = chr(ord(column)+1) # get next letter in alphabet
 
         return entry
-    
-
-    def check_entry(self, entry: dict, check_order=False):
-        'checks if the key and the associated type of the value are those specified in columns, can also check the order'
-        if check_order:
-            for key_given, key_check in zip(entry, self.COLUMNS):
-                if key_given != key_check:
-                    raise Exception("key must be %s but is %s" %(key_check, key_given))
-
-        for key, value in entry.items():
-            # print(type(value), columns[key][0])
-            if not isinstance(value, self.COLUMNS[key][0]):
-                raise Exception("type must be %s but is %s; Value is %s" %(self.COLUMNS[key][0], type(value), value))
             
     # def get_table(self):
     #     '''Returns the whole locker table'''
