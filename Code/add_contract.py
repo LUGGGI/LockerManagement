@@ -44,7 +44,7 @@ class AddContract(LockerParent):
 
                 # update the number of keys, raise error if no keys available
                 current_entry = self.spreadsheet.get_entry(contract.entries["number"])
-                if current_entry["keys"] < 1:
+                if not isinstance(current_entry["keys"], int) or current_entry["keys"] < 1:
                     raise ValueError("No keys available")
                 else:
                     contract.entries["keys"] = current_entry["keys"] - 1

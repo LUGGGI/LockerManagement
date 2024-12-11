@@ -104,7 +104,7 @@ class Spreadsheet:
         Args:
             locker_nr(int): Number of the locker to extend.
         '''
-        entry = dict({"number": locker_nr, "extended": datetime.now()})
+        entry = dict({"number": locker_nr, "extended": datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)})
         return self.update_entry(entry)
 
 

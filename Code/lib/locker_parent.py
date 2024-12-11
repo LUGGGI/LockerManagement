@@ -18,7 +18,7 @@ SPREADSHEET = "Locker copy.xlsx"
 # Find variables for email and fs_server  in their respective files
 
 class LockerParent:
-    def __init__(self, work_folder: str, save_folder: str):
+    def __init__(self, work_folder: str=NEW_CONTRACT_DIR, save_folder: str=SAVED_CONTRACT_DIR):
         '''Initializes the module.'''
         self.spreadsheet: Spreadsheet = None
         self.work_folder = work_folder
