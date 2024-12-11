@@ -2,7 +2,7 @@
 Parent class for all locker programs.
 '''
 __author__ = "Lukas Beck"
-__date__ = "07.11.2023"
+__date__ = "11.12.2024"
 
 import logging
 from os import listdir
@@ -10,9 +10,9 @@ from shutil import move
 
 from Code.lib.spreadsheet import Spreadsheet
 
-NEW_CONTRACT_DIR = "../ContractsNew"
-OLD_CONTRACT_DIR = "../ContractsOld"
-SAVED_CONTRACT_DIR = "../Contracts"
+NEW_CONTRACT_DIR = "." # . is current directory
+OLD_CONTRACT_DIR = "ContractsOld"
+SAVED_CONTRACT_DIR = "Contracts"
 SPREADSHEET = "Locker copy.xlsx"
 
 # Find variables for email and fs_server  in their respective files

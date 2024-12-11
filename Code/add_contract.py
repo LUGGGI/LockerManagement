@@ -3,7 +3,7 @@ This Program reads all the contracts in the "ContractsNew" folder.
 It can add the values to the Locker.xlsx and send an email to the contract holder with the contract attached
 '''
 __author__ = "Lukas Beck"
-__date__ = "09.12.2024"
+__date__ = "11.12.2024"
 
 import logging
 from os import rename
@@ -42,6 +42,17 @@ class AddContract(LockerParent):
                     rename(self.work_folder + '/' + filename, self.work_folder + '/' + new_filename)
                     filename = new_filename
 
+                # update the number of keys, raise error if no keys available
+                current_entry = self.spreadsheet.get_entry(contract.entries["number"])
+                if current_entry["keys"] < 1:
+                    raise ValueError("No keys available")
+                else:
+                    contract.entries["keys"] = current_entry["keys"] - 1
+
+                # check if contract is from the fachschaft (fs)
+                is_fs = input(f"{contract.entries['name']} is from fs (y/N): ")
+                if is_fs.lower() == "y":
+                    contract.entries["fs"] = 1
 
                 # check entry and update the spreadsheet
                 updated = self.spreadsheet.update_entry(contract.entries)
@@ -60,8 +71,3 @@ class AddContract(LockerParent):
         if email.emails.__len__() > 0:
             print("Sending email...")
             email.send_emails()
-
-
-if __name__ == "__main__":
-    AddContract()
-    input("Press enter to exit: ")  

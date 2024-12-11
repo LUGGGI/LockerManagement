@@ -1,16 +1,25 @@
 '''
 This Module handles the interaction with the spreadsheet.
-Allows for reading, updating and checking of entries
+Allows for reading, updating
 '''
 __author__ = "Lukas Beck"
-__date__ = "09.12.2024"
+__date__ = "11.12.2024"
 
 from datetime import datetime
 import openpyxl
 
 
 class Spreadsheet:
-    'handles interaction with spreadsheets'
+    '''Handles interaction with spreadsheets.
+    '''
+    '''Methods:
+    print_whole_sheet()
+    remove_entry(locker_nr: int) -> bool
+    extend_entry(locker_nr: int) -> bool
+    update_entry(updated_entry: dict) -> bool
+    get_entry(locker_nr: int) -> dict
+    get_table() -> list[dict]
+    '''
 
     COLUMNS = {
         # key:          column
@@ -136,38 +145,6 @@ class Spreadsheet:
                 updated = True
         
         return updated
-        extended = False
-
-        if updated_entry["name"] == current_entry["name"]:
-            if updated_entry["since"] != current_entry["since"]:
-                updated_entry["extended"] = updated_entry["since"]
-                updated_entry["since"] = current_entry["since"]
-                print(f"Contract extended with date: {updated_entry['extended']}")
-                extended = True
-
-        
-
-        # return here if entry was removed
-        if updated_entry["name"] == None:
-            return updated
-
-
-        if updated and not extended:            
-            # change number of keys in fs-office
-            if current_entry["keys"] < 1:
-                raise Exception("No keys left")
-            self.worksheet[self.COLUMNS["keys"][1]+row] = current_entry["keys"]-1
-            print("update: %10s: %30s, replacing: %s" %("keys", current_entry["keys"]-1, current_entry["keys"])) 
-
-            # check if someone is from fs
-            is_fs = input(updated_entry["name"] + " is from fs (y/N): ")
-            if is_fs.lower() == "y":
-                updated_entry["fs"] = 1
-                self.worksheet[self.COLUMNS["fs"][1]+row] = int(1)
-                print("update: %10s: %30s, replacing: %s" %("fs", 1, current_entry["fs"]))  
-        
-        return updated
-
 
 
     def get_entry(self, locker_nr: int) -> dict:
@@ -194,16 +171,14 @@ class Spreadsheet:
             column  = chr(ord(column)+1) # get next letter in alphabet
 
         return entry
-            
-    # def get_table(self):
-    #     '''Returns the whole locker table'''
-    #     table = []
-    #     for row in self.worksheet.iter_rows(max_row=self.number_of_rows, max_col=self.number_of_cols, values_only=True):
-    #         table.append(row)
-    #     return table
-    
-    def get_table(self):
-        '''Returns the whole locker table as a list of dictionaries'''
+
+
+    def get_table(self) -> list[dict]:
+        '''Returns the whole locker table as a list of dictionaries
+        
+        Returns:
+            list[dict]: List of all entries in the spreadsheet.
+        '''
         table = []
         for row in range(self.number_of_rows):
             table.append(self.get_entry(row))
