@@ -3,7 +3,7 @@ This Module handles the interaction with the spreadsheet.
 Allows for reading, updating
 '''
 __author__ = "Lukas Beck"
-__date__ = "11.12.2024"
+__date__ = "12.12.2024"
 
 from datetime import datetime
 import openpyxl
@@ -82,20 +82,31 @@ class Spreadsheet:
         
         Args:
             locker_nr(int): Number of the locker.
+        Returns:
+            bool: True if entry was removed, False if not.
+        Raises (should never happen):
+            KeyError: If key is not found in the spreadsheet.
+            TypeError: If type of value is not as specified in COLUMNS_TYPES.
         '''
-        spreadsheet_entry = self.get_entry(locker_nr)
-        closed_entry = {
-            "number": locker_nr,
-            "name": None,
-            "since": None,
-            "extended": None,
-            "email": None,
-            "collateral": None,
-            "rented": None,
-            "keys": spreadsheet_entry["keys"]+1,
-            "fs": None
-        }
-        return self.update_entry(closed_entry)
+        # get the current entry found in the spreadsheet
+        current_entry = self.get_entry(locker_nr)
+
+        # set all values to None except for some keys
+        for key in current_entry.keys():
+            if (
+                key == "number" or 
+                key == "comment" or
+                key == "problem" or
+                key == "revoked" or
+                key == "cleared" or
+                key == "damage"
+                ):
+                continue
+            elif key == "keys":
+                current_entry["keys"] += 1
+            else:
+                current_entry[key] = None
+        return self.update_entry(current_entry)
 
 
     def extend_entry(self, locker_nr: int) -> bool:
