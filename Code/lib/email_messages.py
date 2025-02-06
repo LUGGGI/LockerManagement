@@ -22,6 +22,31 @@ Homepage: https://www.ei.faveve.uni-stuttgart.de/
 """
 )
 
+extend_reminder = str(
+'''
+Hallo {name},
+
+dein Schließfachvertrag läuft bald ab. Wenn du dein Schließfach behalten möchtest, musst du mir das mit dem Link unten nur BEstätigen. Dann verlängert der Vertrag sich automatisch um ein weiteres Semester. 
+
+
+
+Wenn du dein Schließfach nicht mehr benötigst, antworte auf diese eMail um ein Rückgabeltermin auszumachen.
+
+Gruß
+
+LUGGGI (Lukas Beck, Schließfachbeauftragter)
+
+---------------------------------------------------------------------------
+FACHSCHAFT ELEKTROTECHNIK UND INFORMATIONSTECHNIK der UNIVERSITÄT STUTTGART
+stuvus - Studierendenvertretung Universität Stuttgart
+E-Mail: Lukas.Beck@ei.faveve.uni-stuttgart.de 
+Handy:  +49 (0)1516 4671308 (Tel/WhatsApp/Telegram)
+Tel. Büro: +49 (0)711/685-68045
+S-Mail: Pfaffenwaldring 47, 70569 Stuttgart
+Homepage: https://www.ei.faveve.uni-stuttgart.de/
+'''
+)
+
 check_with_new_contract = str(
 '''
 Hallo Schließfachbesitzer*in,

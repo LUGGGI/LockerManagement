@@ -3,7 +3,7 @@ This Module handles the interaction with the spreadsheet.
 Allows for reading, updating
 '''
 __author__ = "Lukas Beck"
-__date__ = "12.12.2024"
+__date__ = "06.02.2024"
 
 from datetime import datetime
 import openpyxl
@@ -61,7 +61,7 @@ class Spreadsheet:
     }
 
     number_of_rows = 409
-    number_of_cols = 16
+    number_of_cols = COLUMNS.__len__()
 
     def __init__(self, file: str) -> None:
         self.workbook = openpyxl.load_workbook(file)
@@ -130,6 +130,7 @@ class Spreadsheet:
             KeyError: If key is not found in the spreadsheet.
             TypeError: If type of value is not as specified in COLUMNS_TYPES.
         '''
+        print(f"Updating entry {updated_entry['number']}")
         updated = False
         # get row number of entry (is locker number +1)
         row =  str(updated_entry["number"]+1)
@@ -145,14 +146,14 @@ class Spreadsheet:
                 raise KeyError(f"Key {key} not found in current spreadsheet entry")
             
             # Check if the the associated type of the value are those specified in COLUMNS_TYPES.
-            if not isinstance(value, self.COLUMNS_TYPES[key]):
+            if not isinstance(value, (self.COLUMNS_TYPES[key], type(None))):
                 raise TypeError(f"Type must be {self.COLUMNS_TYPES[key]} but is {type(value)}; Value is {value}")
             
             
             # update value only if different
             if value != current_entry[key]:
                 self.worksheet[self.COLUMNS[key]+row] = value
-                print("update: %10s: %30s, replacing: %s" %(key, value, current_entry[key]))
+                print(f"  update: {key:>15}: {value:>30}, replacing: {current_entry[key]}")
                 updated = True
         
         return updated

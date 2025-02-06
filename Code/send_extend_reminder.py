@@ -2,7 +2,7 @@
 Send emails to people with contracts in the spreadsheet.
 '''
 __author__ = "Lukas Beck"
-__date__ = "12.12.2024"
+__date__ = "06.02.2025"
 
 import datetime
 
@@ -22,20 +22,22 @@ class SendExtendReminder(LockerParent):
         table = self.spreadsheet.get_table()
         print("Table loaded.")
 
+        # get only rented lockers
         rented = list(filter(lambda x: x["rented"] == 1, table))
+        # get only lockers that are not problem lockers (problem doesn't require extend code)
         entry_list = list(filter(lambda x: x["problem"] != 1, rented))
 
         # for testing get only one contract
         entry_list = list(filter(lambda x: x["number"] == 23, entry_list))
-        print(entry_list)
+        # print(entry_list)
 
-        older_than_5_months = list(filter(lambda x: x["since"] < datetime.datetime.now()-datetime.timedelta(weeks=22), entry_list))
+        # older_than_5_months = list(filter(lambda x: x["since"] < datetime.datetime.now()-datetime.timedelta(weeks=22), entry_list))
 
-        not_extended = list(filter(lambda x: (x["extended"] == None or x["extended"] != 1)), older_than_5_months)
+        # not_extended = list(filter(lambda x: (x["extended"] == None or x["extended"] != 1)), older_than_5_months)
 
-        all_not_fs = list(filter(lambda x: x["fs"] != 1, not_extended))
+        # all_not_fs = list(filter(lambda x: x["fs"] != 1, not_extended))
 
-        all_fs = list(filter(lambda x: x["fs"] == 1, not_extended))
+        # all_fs = list(filter(lambda x: x["fs"] == 1, not_extended))
 
 
         
