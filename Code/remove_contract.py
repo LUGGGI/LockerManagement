@@ -4,16 +4,13 @@ Then it removes for all closed contracts the entry from the spreadsheet.
 It moves the closed contracts into the ContractsOld folder.
 '''
 __author__ = "Lukas Beck"
-__date__ = "17.10.2023"
+__date__ = "12.12.2024"
 
 import logging
 
-from Code.lib.locker_parent import LockerParent
+from Code.lib.locker_parent import LockerParent, SAVED_CONTRACT_DIR, OLD_CONTRACT_DIR
 from Code.lib.contract_handler import Contract, NotClosedError
 
-OLD_CONTRACT_DIR = "../ContractsOld"
-SAVED_CONTRACT_DIR = "../Contracts"
-SPREADSHEET = "../Locker.xlsx"
 
 class RemoveContracts(LockerParent):
     def __init__(self):
@@ -29,8 +26,9 @@ class RemoveContracts(LockerParent):
                 if not any(chr.isdigit() for chr in filename): # skip non contract files
                     continue
                 print(filename)
+
                 # read contract and check if closed
-                contract = Contract(self.work_folder + "/" + filename)
+                contract = Contract(f"{self.work_folder}/{filename}")
                 try:
                     contract.read(check_if_closed=True)
                 except NotClosedError:

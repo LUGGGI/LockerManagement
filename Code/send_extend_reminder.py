@@ -2,7 +2,7 @@
 Send emails to people with contracts in the spreadsheet.
 '''
 __author__ = "Lukas Beck"
-__date__ = "10.11.2023"
+__date__ = "06.02.2025"
 
 import datetime
 
@@ -11,35 +11,37 @@ from Code.lib.email_handler import Email
 from Code.lib.email_messages import check_with_new_contract_25, check_with_new_contract, check_with_new_contract_fs_25, check_with_new_contract_fs
 
 
-NEW_CONTRACT_DIR = "../ContractsNew"
-SAVED_CONTRACT_DIR = "../Contracts"
-
 class SendExtendReminder(LockerParent):
     def __init__(self):
-        super().__init__(NEW_CONTRACT_DIR, SAVED_CONTRACT_DIR)
+        super().__init__()
         
-        print(f"This Programm sends extend reminders.")
+        print(f"This Programm sends extend reminders with the extend codes.")
 
         self.load_spreadsheet()
             
         table = self.spreadsheet.get_table()
-        
         print("Table loaded.")
+
+        # get only rented lockers
+        rented = list(filter(lambda x: x["rented"] == 1, table))
+        # get only lockers that are not problem lockers (problem doesn't require extend code)
+        entry_list = list(filter(lambda x: x["problem"] != 1, rented))
+
+        # for testing get only one contract
+        entry_list = list(filter(lambda x: x["number"] == 23, entry_list))
+        # print(entry_list)
+
+        # older_than_5_months = list(filter(lambda x: x["since"] < datetime.datetime.now()-datetime.timedelta(weeks=22), entry_list))
+
+        # not_extended = list(filter(lambda x: (x["extended"] == None or x["extended"] != 1)), older_than_5_months)
+
+        # all_not_fs = list(filter(lambda x: x["fs"] != 1, not_extended))
+
+        # all_fs = list(filter(lambda x: x["fs"] == 1, not_extended))
+
+
         
-        rented = list(filter(lambda x: x[8] == 1, table))
-        no_error = list(filter(lambda x: x[10] != 1, rented))
-        old = list(filter(lambda x: x[2] < datetime.datetime(2022, 10, 20), no_error))
-        not_extended = list(filter(lambda x: (x[3] == None) or (x[3] < datetime.datetime(2022, 10, 20)), old))
-
-        all_not_fs = list(filter(lambda x: x[9] != 1, not_extended))
-        all_fs = list(filter(lambda x: x[9] == 1, not_extended))
-
-
-        all_fs_50 = list(filter(lambda x: x[5] == 50, all_fs))
-        all_fs_25 = list(filter(lambda x: x[5] == 25, all_fs))
-
-        all_not_fs_50 = list(filter(lambda x: x[5] == 50, all_not_fs))
-        all_not_fs_25 = list(filter(lambda x: x[5] == 25, all_not_fs))
+        print(all_fs)
 
         print("\nFS")
         self.send_emails(all_fs_50, check_with_new_contract_fs)

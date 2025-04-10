@@ -5,21 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
-            "type": "python",
+            "name": "Python Debugger: Module",
+            "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "cwd": "${workspaceFolder}/Code"
-        },
-        // {
-        //     "name": "Python: Module",
-        //     "type": "python",
-        //     "request": "launch",
-        //     "module": "main",
-        //     "justMyCode": true,
-        //     "cwd": "${workspaceFolder}/UpdateContracts"
-        // }
+            "module": "main"
+        }
     ]
 }
