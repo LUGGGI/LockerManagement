@@ -153,7 +153,7 @@ class Spreadsheet:
             # update value only if different
             if value != current_entry[key]:
                 self.worksheet[self.COLUMNS[key]+row] = value
-                print(f"  update: {key:>15}: {value:>30}, replacing: {current_entry[key]}")
+                print(f"  update: {key:>15}: {str(value):>30}, replacing: {current_entry[key]}")
                 updated = True
         
         return updated
