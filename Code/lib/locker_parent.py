@@ -13,7 +13,7 @@ from Code.lib.spreadsheet import Spreadsheet
 NEW_CONTRACT_DIR = "." # . is current directory
 OLD_CONTRACT_DIR = "ContractsOld"
 SAVED_CONTRACT_DIR = "Contracts"
-SPREADSHEET = "Locker copy.xlsx"
+SPREADSHEET = "Locker.xlsx"
 
 # Find variables for email and fs_server  in their respective files
 
