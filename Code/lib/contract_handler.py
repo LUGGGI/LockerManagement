@@ -45,7 +45,9 @@ class Contract:
         self.entries["rented"] = int(1)
 
         if check_if_closed:
-            if fields["Datum_3"] == None:
+            # If there is a Date in the closed section, the contract is closed
+            # check two different fields depending on the contract version, DatumEnde is used in the nem version
+            if fields.get("DatumEnde", False) or fields.get("Datum_3", False) == None:
                 raise NotClosedError(f"Contract {self.file} is not closed")
         
         print(self.entries)
