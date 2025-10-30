@@ -14,7 +14,6 @@ class ExtendCodeGenerator(LockerParent):
         super().__init__()
 
         print(f"This Program generates extend codes for all contracts and saves them in the spreadsheet.")
-        print("Also resets the extend_check to 0.")
         
         self.load_spreadsheet()
         
@@ -40,7 +39,6 @@ class ExtendCodeGenerator(LockerParent):
 
             for entry, random_number in zip(entry_list, random_number_list):
                 entry["extend_code"] = random_number
-                entry["extend_check"] = 0
                 
                 updated = self.spreadsheet.update_entry(entry)
 

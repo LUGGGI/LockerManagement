@@ -37,7 +37,7 @@ class Contract:
         try:
             self.entries["number"] = int(fields["Schließfachnummer"])
             self.entries["name"] = str(fields["Name"])
-            self.entries["since"] = datetime.strptime(fields["Datum"], "%d.%m.%Y")
+            self.entries["created"] = datetime.strptime(fields["Datum"], "%d.%m.%Y")
             self.entries["email"] = str(fields["MailAdresse"])
         except:
             raise MainFieldMissingError(self.file + ": One of the main fields is not found (Number, Name, Date, Email)")

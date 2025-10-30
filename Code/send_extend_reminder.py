@@ -32,10 +32,11 @@ class SendExtendReminder(LockerParent):
         # print(entry_list)
 
         # get only lockers that are older than 5 months
-        table = list(filter(lambda x: x["since"] < datetime.datetime.now()-datetime.timedelta(weeks=22), table))
+        table = list(filter(lambda x: x["created"] < datetime.datetime.now()-datetime.timedelta(weeks=22), table))
 
-        # get only lockers where the extend_check is 0 (not checked in yet)
-        table = list(filter(lambda x: x["extend_check"] == 0, table))
+        # TODO: Add new logic that ask for time
+        # get only lockers that are not extended in the last 5 months
+        table = list(filter(lambda x: x["extended"] < datetime.datetime.now()-datetime.timedelta(weeks=22), table))
 
         # get only lockers that are fs (fs = Fachschaft)
         table_from_fs = list(filter(lambda x: x["fs"] == 1, table))
