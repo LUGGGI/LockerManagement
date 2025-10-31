@@ -3,11 +3,12 @@ This Module handles the transfer of files to the fs server.
 Private/ public key combo is used for authentication.
 
 Author: Lukas Beck
-Date: 23.08.2025
+Date: 31.10.2025
 """
 
 import os
 from json import load
+import logging
 
 import sftpretty
 
@@ -26,6 +27,8 @@ PRIVATE_KEY_FILE = "C:/Users/LUGGGI/.ssh/id_rsa" # private key file for authenti
 FILE_PERMISSIONS = 600 # rw-------
 LOCAL_FOLDER = "Contracts" # local folder to sync with server
 
+logging.getLogger("sftpretty").setLevel(logging.WARNING)
+
 class FsServerHandler:
     """Handles the upload of files to the fs server."""
 
@@ -36,8 +39,14 @@ class FsServerHandler:
             login = load(file)
             self.user = login["user"]
 
-        self.sftp = sftpretty.Connection(host=SERVER, username=self.user, private_key=PRIVATE_KEY_FILE)
-        print("Connected to fs server.")
+        self.sftp = None
+
+
+    def create_connection(self):
+        """Creates a new connection to the server."""
+        if self.sftp is None:
+            self.sftp = sftpretty.Connection(host=SERVER, username=self.user, private_key=PRIVATE_KEY_FILE)
+            print("Connected to fs server.")
 
     def upload_file(self, file: str):
         """Uploads file to server with correct permissions.
@@ -45,6 +54,7 @@ class FsServerHandler:
         Args:
             file (str): PDF file to upload
         """
+        self.create_connection()
         # check if file exists locally and is a pdf file
         if not os.path.isfile(file) or not file.lower().endswith(".pdf"):
             print(f"File {file} does not exist or is not a PDF file.")
@@ -63,6 +73,7 @@ class FsServerHandler:
         Args:
             file (str): PDF file to move
         """
+        self.create_connection()
         file = os.path.basename(file_path) # get only filename from path
 
         self.sftp.chdir(FOLDER_ACTIVE)
@@ -85,6 +96,7 @@ class FsServerHandler:
 
         Then aks if local or server files are currently correct and syncs the other side to it.
         """
+        self.create_connection()
         self.sftp.chdir(FOLDER_ACTIVE)
         server_files = self.sftp.listdir()
         print("Files on server:")
@@ -138,6 +150,7 @@ class FsServerHandler:
         Args:
             database_file (str): Path to the database file.
         """
+        self.create_connection()
         if not os.path.isfile(database_file):
             print(f"Database file {database_file} does not exist.")
             return
@@ -161,6 +174,6 @@ if __name__ == "__main__":
     fs_server_handler = FsServerHandler()
     # fs_server_handler.upload_file("Formular.pdf")
     # fs_server_handler.move_file_to_contracts_old("Formular.pdf")
-    # fs_server_handler.sync_active_folder()
+    fs_server_handler.sync_active_folder()
     fs_server_handler.upload_database("Locker.xlsx")
     fs_server_handler.close()
