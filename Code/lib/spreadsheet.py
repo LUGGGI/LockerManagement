@@ -66,6 +66,8 @@ class Spreadsheet:
         self.worksheet = self.workbook.active
         self.file = file
 
+        self.updated = False
+
 
     def print_whole_sheet(self):
         '''Print the whole excel file.'''
@@ -155,6 +157,8 @@ class Spreadsheet:
                 print(f"  update: {key:>15}: {str(value):>30}, replacing: {current_entry[key]}")
                 updated = True
         
+        if updated:
+            self.updated = True
         return updated
 
 
