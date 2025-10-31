@@ -3,7 +3,7 @@ This Program reads all the contracts in the "ContractsNew" folder.
 It can add the values to the Locker.xlsx and send an email to the contract holder with the contract attached
 '''
 __author__ = "Lukas Beck"
-__date__ = "11.12.2024"
+__date__ = "31.10.2025"
 
 import logging
 from os import rename
@@ -64,6 +64,10 @@ class AddContract(LockerParent):
                         f"{self.work_folder}/{filename}"
                     )
                     self.move_contract(filename)
+
+            except ValueError as ve:
+                logging.error(f"ValueError for file {filename}: {ve}")
+                continue
                             
             except Exception as e:
                 logging.exception(e)
