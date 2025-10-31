@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
-        "openpyxl"
+        "openpyxl",
+        "sftpretty"
     ],
     "python.analysis.extraPaths": [
         "updateContracts",

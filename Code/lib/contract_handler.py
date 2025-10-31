@@ -2,7 +2,7 @@
 This Module handles the data from the "Schliessfaecher" form.
 '''
 __author__ = "Lukas Beck"
-__date__ = "17.10.2023"
+__date__ = "23.08.2025"
 
 
 from pypdf import PdfReader, PdfWriter
@@ -37,7 +37,7 @@ class Contract:
         try:
             self.entries["number"] = int(fields["Schließfachnummer"])
             self.entries["name"] = str(fields["Name"])
-            self.entries["since"] = datetime.strptime(fields["Datum"], "%d.%m.%Y")
+            self.entries["created"] = datetime.strptime(fields["Datum"], "%d.%m.%Y")
             self.entries["email"] = str(fields["MailAdresse"])
         except:
             raise MainFieldMissingError(self.file + ": One of the main fields is not found (Number, Name, Date, Email)")
@@ -45,7 +45,9 @@ class Contract:
         self.entries["rented"] = int(1)
 
         if check_if_closed:
-            if fields["Datum_3"] == None:
+            # If there is a Date in the closed section, the contract is closed
+            # check two different fields depending on the contract version, DatumEnde is used in the nem version
+            if fields.get("DatumEnde", None) == None and fields.get("Datum_3", None) == None:
                 raise NotClosedError(f"Contract {self.file} is not closed")
         
         print(self.entries)

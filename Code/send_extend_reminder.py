@@ -15,7 +15,7 @@ class SendExtendReminder(LockerParent):
     def __init__(self):
         super().__init__()
         
-        print(f"This Programm sends extend reminders with the extend codes.")
+        print(f"This program sends extend reminders with the extend codes.")
 
         self.load_spreadsheet()
             
@@ -23,34 +23,29 @@ class SendExtendReminder(LockerParent):
         print("Table loaded.")
 
         # get only rented lockers
-        rented = list(filter(lambda x: x["rented"] == 1, table))
+        table = list(filter(lambda x: x["rented"] == 1, table))
         # get only lockers that are not problem lockers (problem doesn't require extend code)
-        entry_list = list(filter(lambda x: x["problem"] != 1, rented))
+        table = list(filter(lambda x: x["problem"] != 1, table))
 
         # for testing get only one contract
-        entry_list = list(filter(lambda x: x["number"] == 23, entry_list))
+        # entry_list = list(filter(lambda x: x["number"] == 23, entry_list))
         # print(entry_list)
 
-        # older_than_5_months = list(filter(lambda x: x["since"] < datetime.datetime.now()-datetime.timedelta(weeks=22), entry_list))
+        # get only lockers that are older than 5 months
+        table = list(filter(lambda x: x["created"] < datetime.datetime.now()-datetime.timedelta(weeks=22), table))
 
-        # not_extended = list(filter(lambda x: (x["extended"] == None or x["extended"] != 1)), older_than_5_months)
+        # TODO: Add new logic that ask for time
+        # get only lockers that are not extended in the last 5 months
+        table = list(filter(lambda x: x["extended"] < datetime.datetime.now()-datetime.timedelta(weeks=22), table))
 
-        # all_not_fs = list(filter(lambda x: x["fs"] != 1, not_extended))
+        # get only lockers that are fs (fs = Fachschaft)
+        table_from_fs = list(filter(lambda x: x["fs"] == 1, table))
 
-        # all_fs = list(filter(lambda x: x["fs"] == 1, not_extended))
+        # get only lockers that are not fs (fs = Fachschaft)
+        table_not_from_fs = list(filter(lambda x: x["fs"] != 1, table))
 
 
-        
-        print(all_fs)
-
-        print("\nFS")
-        self.send_emails(all_fs_50, check_with_new_contract_fs)
-        print("\nFS_25")
-        self.send_emails(all_fs_25, check_with_new_contract_fs_25)
-        print("\nNOT_FS")
-        self.send_emails(all_not_fs_50, check_with_new_contract)
-        print("\nNOT_FS_25")
-        self.send_emails(all_not_fs_25, check_with_new_contract_25)
+        print(table_not_from_fs)
         
 
             
@@ -69,8 +64,7 @@ class SendExtendReminder(LockerParent):
             email.create_email(
                 receiver=entry[4], 
                 message=message_with_data, 
-                subject="Info über Entzug deines Schließfachs", 
-                attachment="../ContractsNew/Formular_normal_sign.pdf"
+                subject="Dein Schließfachvertrag läuft ab"
             )
 
         send = input("Send emails to listed contracts? (Y/n): ")

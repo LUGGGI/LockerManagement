@@ -25,9 +25,9 @@ class Spreadsheet:
         # key:          column
         "number":       'A',
         "name":         'B',
-        "since":        'C',
-        "extended":     'D',
-        "email":        'E',
+        "email":        'C',
+        "created":      'D',
+        "extended":     'E',
         "collateral":   'F',
         "comment":      'G',
         "keys":         'H',
@@ -38,15 +38,14 @@ class Spreadsheet:
         "cleared":      'M',
         "damage":       'N',
         "extend_code":  'O',
-        "extend_check": 'P',
     }
 
     COLUMNS_TYPES = {
         "number":       int,
         "name":         str,
-        "since":        datetime,
-        "extended":     datetime,
         "email":        str,
+        "created":      datetime,
+        "extended":     datetime,
         "collateral":   int,
         "comment":      str,
         "keys":         int,
@@ -57,7 +56,6 @@ class Spreadsheet:
         "cleared":      int,
         "damage":       int,
         "extend_code":  int,
-        "extend_check": int,
     }
 
     number_of_rows = 409
@@ -93,6 +91,7 @@ class Spreadsheet:
 
         # set all values to None except for some keys
         for key in current_entry.keys():
+            # don't set these keys to None
             if (
                 key == "number" or 
                 key == "comment" or
@@ -194,4 +193,16 @@ class Spreadsheet:
         table = []
         for row in range(self.number_of_rows):
             table.append(self.get_entry(row))
+        return table
+
+    def get_table_as_dict(self) -> dict[int, dict]:
+        '''Returns the whole locker table as a dictionary of dictionaries
+        
+        Returns:
+            dict: Dictionary of all entries in the spreadsheet with locker number as key.
+        '''
+        table = {}
+        for row in range(self.number_of_rows):
+            entry = self.get_entry(row)
+            table[entry["number"]] = entry
         return table

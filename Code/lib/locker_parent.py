@@ -2,13 +2,14 @@
 Parent class for all locker programs.
 '''
 __author__ = "Lukas Beck"
-__date__ = "11.12.2024"
+__date__ = "23.08.2025"
 
 import logging
 from os import listdir
 from shutil import move
 
 from Code.lib.spreadsheet import Spreadsheet
+from Code.lib.fs_server_handler import FsServerHandler
 
 NEW_CONTRACT_DIR = "." # . is current directory
 OLD_CONTRACT_DIR = "ContractsOld"
@@ -25,6 +26,18 @@ class LockerParent:
         self.save_folder = save_folder
         self.filenames = listdir(self.work_folder)
 
+        self.fs_server_handler = FsServerHandler()
+
+    def __del__(self):
+        '''Destructor to clean up resources if necessary.'''
+        if self.spreadsheet:
+            try:
+                self.spreadsheet.workbook.close()
+                print("Spreadsheet closed.")
+            except Exception as error:
+                logging.exception("Error while closing spreadsheet: " + str(error))
+        self.upload_database()
+        self.fs_server_handler.sftp.close()
 
     def load_spreadsheet(self):
         '''Loads the spreadsheet from the defined SPREADSHEET path.'''
@@ -61,9 +74,18 @@ class LockerParent:
                 try: 
                     move(self.work_folder + "/" + filename, self.save_folder + "/" + filename)
                     print(" -> Moved")
+                    if self.save_folder != OLD_CONTRACT_DIR: # upload only if not moving to old contracts
+                        self.fs_server_handler.upload_file(self.save_folder + "/" + filename)
+                    else:
+                        self.fs_server_handler.remove_from_active_add_to_old(self.save_folder + "/" + filename)
                     return
                 except:
                     logging.error("!!  ERROR: " + filename + " can't be moved, close all programs that have it open")
                     input("press Enter to continue: ")
             raise Exception(filename + " can't be moved")
+        
+    def upload_database(self):
+        '''Uploads the database to the fs server.'''
+        if self.spreadsheet:
+            self.fs_server_handler.upload_database(SPREADSHEET)
 
