@@ -64,8 +64,7 @@ class SendExtendReminder(LockerParent):
             email.create_email(
                 receiver=entry[4], 
                 message=message_with_data, 
-                subject="Info über Entzug deines Schließfachs", 
-                attachment="../ContractsNew/Formular_normal_sign.pdf"
+                subject="Dein Schließfachvertrag läuft ab"
             )
 
         send = input("Send emails to listed contracts? (Y/n): ")

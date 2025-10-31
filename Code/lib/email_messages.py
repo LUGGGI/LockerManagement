@@ -26,9 +26,9 @@ extend_reminder = str(
 '''
 Hallo {name},
 
-dein Schließfachvertrag läuft bald ab. Wenn du dein Schließfach behalten möchtest, musst du mir das mit dem Link unten nur BEstätigen. Dann verlängert der Vertrag sich automatisch um ein weiteres Semester. 
+dein Schließfachvertrag läuft bald ab. Wenn du dein Schließfach behalten möchtest, musst du mir das mit dem Link unten nur Bestätigen. Dann verlängert der Vertrag sich automatisch um ein weiteres Semester. 
 
-
+{extend_link}
 
 Wenn du dein Schließfach nicht mehr benötigst, antworte auf diese eMail um ein Rückgabeltermin auszumachen.
 
