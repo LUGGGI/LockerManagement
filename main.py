@@ -2,9 +2,10 @@
 Execute programs
 
 This program needs the following directory structure:
-- Code
-- Contracts
-- ContractsOld
+- Code/
+- Contracts/
+- ContractsOld/
+- new_contract.pdf
 - Locker.xlsx
 - main.py
 '''
@@ -12,6 +13,7 @@ __author__ = "Lukas Beck"
 __date__ = "31.10.2025"
 
 from Code.add_contract import AddContract
+from Code.extend_code_generator import ExtendCodeGenerator
 from Code.extend_contract import ExtendContract
 from Code.remove_contract import RemoveContracts
 from Code.send_extend_reminder import SendExtendReminder
@@ -45,6 +47,8 @@ if __name__ == "__main__":
             choice = input("Please enter the letter for the wanted function (E/S/G/U): ").lower()
             if choice == "e":
                 ExtendContract()
+            elif choice == "g":
+                ExtendCodeGenerator()
             elif choice == "s":
                 SendExtendReminder()
             elif choice == "g":
