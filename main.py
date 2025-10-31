@@ -12,17 +12,24 @@ This program needs the following directory structure:
 __author__ = "Lukas Beck"
 __date__ = "31.10.2025"
 
-from Code.add_contract import AddContract
-from Code.extend_code_generator import ExtendCodeGenerator
-from Code.extend_contract import ExtendContract
-from Code.remove_contract import RemoveContracts
-from Code.send_extend_reminder import SendExtendReminder
-from Code.extend_code_generator import ExtendCodeGenerator
-from Code.extend_update_from_file import ExtendUpdateFromFile
+import logging
 
-# Find file path and other global variables in \Code\lib\locker_parent.py
+try:
+    from Code.add_contract import AddContract
+    from Code.extend_code_generator import ExtendCodeGenerator
+    from Code.extend_contract import ExtendContract
+    from Code.remove_contract import RemoveContracts
+    from Code.send_extend_reminder import SendExtendReminder
+    from Code.extend_code_generator import ExtendCodeGenerator
+    from Code.extend_update_from_file import ExtendUpdateFromFile
 
-if __name__ == "__main__":
+    logging.basicConfig(
+        format="%(asctime)s.%(msecs)03d; %(levelname)-8s; "
+            "%(message)-90s; %(module)s.%(funcName)s(%(lineno)d);",
+        datefmt='%H:%M:%S', level=logging.INFO)
+
+    # Find file path and other global variables in \Code\lib\locker_parent.py
+
     while(True):
         print()
         print("This program handles interaction between spreadsheets and contracts, it can:"
@@ -59,3 +66,9 @@ if __name__ == "__main__":
                 continue
         else:
             break
+except KeyboardInterrupt:
+    print("\nProgram interrupted by user.")
+
+except Exception as e:
+    logging.exception("Fatal error in main program: " + str(e))
+    input("Press Enter to exit.")
