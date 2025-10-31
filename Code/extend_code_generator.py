@@ -50,5 +50,7 @@ class ExtendCodeGenerator(LockerParent):
             with open("extend_codes.csv", "w") as file:
                 file.write("number,code\n")
                 for entry in entry_list:
-                    file.write(f"{entry['number']},{entry['extend_code']}\n")
+                    extend_code = entry.get("extend_code", None)
+                    if extend_code is not None:
+                        file.write(f"{entry['number']},{extend_code}\n")
             print(" -> Exported")
