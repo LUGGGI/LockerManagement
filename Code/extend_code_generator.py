@@ -48,6 +48,7 @@ class ExtendCodeGenerator(LockerParent):
         choice = input("Export extend codes to csv? (y/N):").lower()
         if choice == "y":
             with open("extend_codes.csv", "w") as file:
+                file.write("number,code\n")
                 for entry in entry_list:
                     file.write(f"{entry['number']},{entry['extend_code']}\n")
             print(" -> Exported")

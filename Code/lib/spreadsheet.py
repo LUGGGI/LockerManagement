@@ -194,3 +194,15 @@ class Spreadsheet:
         for row in range(self.number_of_rows):
             table.append(self.get_entry(row))
         return table
+
+    def get_table_as_dict(self) -> dict[int, dict]:
+        '''Returns the whole locker table as a dictionary of dictionaries
+        
+        Returns:
+            dict: Dictionary of all entries in the spreadsheet with locker number as key.
+        '''
+        table = {}
+        for row in range(self.number_of_rows):
+            entry = self.get_entry(row)
+            table[entry["number"]] = entry
+        return table
